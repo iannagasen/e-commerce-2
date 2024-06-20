@@ -42,6 +42,11 @@ public class InventoryEntity implements Inventory {
     return this;
   }
 
+  public InventoryEntity restore(int amount) {
+    this.stock += amount;
+    return this;
+  }
+
   public InventoryEntity addUpdate(InventoryUpdate update) {
     this.history.add(update);
     this.lastUpdate = update;

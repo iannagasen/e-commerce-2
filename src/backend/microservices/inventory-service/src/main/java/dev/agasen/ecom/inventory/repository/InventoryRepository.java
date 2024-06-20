@@ -7,4 +7,5 @@ import reactor.core.publisher.Mono;
 public interface InventoryRepository extends ReactiveMongoRepository<InventoryEntity, String> {
   
   Mono<InventoryEntity> findByProductId(Long productId);
+  Mono<InventoryEntity> findByInventoryId(Long inventoryId);
 }

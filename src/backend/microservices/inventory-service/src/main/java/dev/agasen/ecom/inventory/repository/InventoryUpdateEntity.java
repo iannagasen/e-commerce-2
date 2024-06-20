@@ -27,7 +27,7 @@ public class InventoryUpdateEntity implements InventoryUpdate {
   private @Id String id;
   private @Indexed(unique=true) Long updateId;
   private @Indexed Long inventoryId;
-  private Long orderId;
+  private @Indexed Long orderId;
   private InventoryUpdateType type;
   private int quantity;
   private LocalDateTime createdAt;

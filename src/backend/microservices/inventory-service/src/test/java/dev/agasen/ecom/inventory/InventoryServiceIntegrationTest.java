@@ -134,4 +134,23 @@ public class InventoryServiceIntegrationTest extends MongoDBTestBase {
            e.getMessage().equals("Insufficient stock for product: 1"))
       .verify();
   }
+
+  @Test
+  void testRestore() {
+    var restore_orderId_10 = 10L;
+
+    Mono<InventoryEntity> restoreMono = inventoryService.restore(restore_orderId_10);
+
+    StepVerifier.create(restoreMono)
+      .assertNext(inv -> {
+        assertEquals(25, inv.getStock(), 0);
+        assertEquals(2L, inv.getInventoryId(), 0);
+        assertEquals(2L, inv.getProductId(), 0);
+        // assertEquals(2, inv.getHistory().size());
+        // assertEquals(InventoryUpdateType.PURCHASE, inv.getLastUpdate().getType());
+        // assertEquals(2L, inv.getLastUpdate().getOrderId(), 0);
+        // assertEquals(6, inv.getLastUpdate().getQuantity());
+      })
+      .verifyComplete();
+  }
 }

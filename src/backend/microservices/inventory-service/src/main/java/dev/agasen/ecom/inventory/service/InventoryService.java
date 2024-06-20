@@ -34,6 +34,34 @@ public class InventoryService {
       .transform(this.updateInventory(req));
   }
 
+  @Transactional
+  public Mono<InventoryEntity> restore(Long orderId) {
+    // TODO: current assumption of InventoryDeductionRequest is 1 order = 1 product
+    // handle multiple products in an order
+    return updateRepo.findAllByOrderId(orderId)
+      .take(1)
+      .next()
+      .filter(update -> update.getType() == InventoryUpdateType.PURCHASE)
+      .flatMap(update -> inventoryRepo
+          .findByInventoryId(update.getInventoryId())
+          .map(inv -> inv.restore(update.getQuantity()))
+          .flatMap(inventoryRepo::save)
+          .zipWhen(inv -> seqGen.generateSequence(InventoryUpdateEntity.SEQUENCE_NAME)
+              .map(seq -> InventoryUpdateEntity.builder()
+                  .updateId(seq)
+                  .inventoryId(inv.getInventoryId())
+                  .orderId(orderId)
+                  .type(InventoryUpdateType.CUSTOMER_RETURN)
+                  .quantity(update.getQuantity())
+                  .createdAt(LocalDateTime.now())
+                  .build()
+              )
+              .flatMap(updateRepo::save)
+          )
+          .map(t -> t.getT1())
+      );
+  }
+
   private UnaryOperator<Mono<InventoryEntity>> updateInventory(InventoryDeductionRequest req) {
     var saveInventoryUpdate = seqGen
       .generateSequence(InventoryUpdateEntity.SEQUENCE_NAME)
