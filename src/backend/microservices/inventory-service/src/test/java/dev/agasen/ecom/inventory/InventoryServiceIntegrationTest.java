@@ -7,7 +7,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import dev.agasen.ecom.api.core.inventory.model.InventoryDeductionRequest;
 import dev.agasen.ecom.api.core.inventory.model.InventoryUpdateType;
@@ -19,8 +18,7 @@ import dev.agasen.ecom.inventory.service.UpdateInventoryService;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-@SpringBootTest
-public class InventoryServiceIntegrationTest extends KafkaMessagingTestBase {
+public class InventoryServiceIntegrationTest extends BaseIntegrationTest {
 
   @Autowired private InventoryRepository inventoryRepository;
   @Autowired private InventoryUpdateRepository updateRepository;

@@ -18,6 +18,4 @@ public class MongoDBTestBase {
     registry.add("spring.data.mongodb.port", () -> MONGODB.getMappedPort(27017));
     registry.add("spring.data.mongodb.database", () -> "test");
   }  
-
-
 }

@@ -26,23 +26,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 import reactor.test.StepVerifier;
 
-@TestPropertySource(properties = {
-  // ! orderEventRouter = our application, orderEventProduucer & inventoryEventConsumer = see TestConfiguration below
-  "spring.cloud.function.definition=orderEventRouter;orderEventProducer;inventoryEventConsumer",
-  "spring.cloud.stream.bindings.orderEventProducer-out-0.destination=order-events",
-  "spring.cloud.stream.bindings.inventoryEventConsumer-in-0.destination=inventory-events"
-})
-public class InventoryEventProcessorIntegrationTest extends KafkaMessagingTestBase {
 
-  /**
-   * ! Sink = producer/publisher that can be subscribe by 1 or more consumers
-   * ! Sinks.many() - sink that can emit multiple items
-   * ! unicast = single subscriber
-   * ! onBackpressureBuffer = if sinks subscriber can't keep up with the incoming items, add buffer to handle backpressure
-   */
-  private static final Sinks.Many<OrderEvent> requestSink    = Sinks.many().unicast().onBackpressureBuffer();
-  private static final Sinks.Many<InventoryEvent> responseSink = Sinks.many().unicast().onBackpressureBuffer();
-  private static final Flux<InventoryEvent> responseFlux = responseSink.asFlux().cache(0);
+public class InventoryEventProcessorIntegrationTest extends BaseIntegrationTest {
 
   @Autowired private InventoryRepository inventoryRepository;
   @Autowired private InventoryUpdateRepository updateRepository;
@@ -138,19 +123,6 @@ public class InventoryEventProcessorIntegrationTest extends KafkaMessagingTestBa
 
 
 
-  @TestConfiguration
-  static class TestConfig {
-
-    @Bean
-    public Supplier<Flux<OrderEvent>> orderEventProducer(){
-      return requestSink::asFlux;
-    }
-
-    @Bean
-    public Consumer<Flux<InventoryEvent>> inventoryEventConsumer(){
-      return f -> f.doOnNext(responseSink::tryEmitNext).subscribe();
-    }
-  }
 
 
 }
