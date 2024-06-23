@@ -7,7 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import dev.agasen.ecom.api.core.payment.model.OrderItem;
+import dev.agasen.ecom.api.core.order.model.OrderItem;
 import dev.agasen.ecom.api.core.payment.model.Payment;
 import dev.agasen.ecom.api.core.payment.model.TransactionType;
 import lombok.AllArgsConstructor;

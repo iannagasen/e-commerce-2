@@ -2,6 +2,7 @@ package dev.agasen.ecom.api.core.payment.model;
 
 import java.util.List;
 
+import dev.agasen.ecom.api.core.order.model.OrderItem;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

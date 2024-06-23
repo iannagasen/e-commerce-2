@@ -5,3 +5,34 @@ spring.data.mongodb:
   host: localhost
   port: 27018
   database: payment-db
+
+
+spring.cloud:
+  function:
+    # the name of the method to process events
+    definition: orderEventRouter 
+  stream:
+    default.producer.useNativeEncoding: true
+    bindings:
+      orderEventRouter-in-0:
+        # we are consuming from order-events topic
+        destination: order-events
+        group: payment-group
+      orderEventRouter-out-0 :
+        destination: payment-events
+    kafka:
+      binder:
+        brokers: "localhost:9094"
+        consumer-properties:
+          "value.deserializer": org.springframework.kafka.support.serializer.JsonDeserializer
+          "key.deserializer": org.apache.kafka.common.serialization.StringDeserializer
+          "auto.offset.reset": "earliest"
+          # "bootstrap.servers": "localhost:9094"
+          # ? where the DomainEvent class is located -- why? 
+          # "spring.json.trusted.packages": "dev.agasen.ecom.api.core.order.event.*"
+          "spring.json.trusted.packages": "*" 
+        producer-properties:
+          # "bootstrap.servers": "localhost:9094"
+          "value.serializer": org.springframework.kafka.support.serializer.JsonSerializer
+          "key.serializer": org.apache.kafka.common.serialization.StringSerializer
+            

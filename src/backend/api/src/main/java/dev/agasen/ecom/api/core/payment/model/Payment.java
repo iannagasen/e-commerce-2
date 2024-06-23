@@ -3,6 +3,8 @@ package dev.agasen.ecom.api.core.payment.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import dev.agasen.ecom.api.core.order.model.OrderItem;
+
 public interface Payment {
 
   Long getPaymentId();
