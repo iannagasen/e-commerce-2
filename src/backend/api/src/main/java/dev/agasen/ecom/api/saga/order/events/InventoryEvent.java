@@ -2,7 +2,6 @@ package dev.agasen.ecom.api.saga.order.events;
 
 import java.time.Instant;
 
-import dev.agasen.ecom.api.core.inventory.model.Inventory;
 import dev.agasen.ecom.api.messaging.DomainEvent;
 import dev.agasen.ecom.api.saga.order.OrderSaga;
 import lombok.Builder;

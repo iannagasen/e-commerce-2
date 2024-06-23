@@ -1,6 +1,7 @@
 package dev.agasen.ecom.api.core.payment.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface Payment {
 
@@ -13,8 +14,8 @@ public interface Payment {
   Long getCustomerId();
   void setCustomerId(Long customerId);
 
-  Long getAmount();
-  void setAmount(Long amount);
+  List<OrderItem> getOrderItems();
+  void setOrderItems(List<OrderItem> orderItems);
 
   TransactionType getTransactionType();
   void setTransactionType(TransactionType transactionType);
