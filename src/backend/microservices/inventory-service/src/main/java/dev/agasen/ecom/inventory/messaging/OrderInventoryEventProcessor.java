@@ -2,6 +2,7 @@ package dev.agasen.ecom.inventory.messaging;
 
 import org.springframework.stereotype.Service;
 
+import dev.agasen.ecom.api.core.inventory.model.InventoryDeductionRequest;
 import dev.agasen.ecom.api.saga.order.events.InventoryEvent;
 import dev.agasen.ecom.api.saga.order.events.OrderEvent.Cancelled;
 import dev.agasen.ecom.api.saga.order.events.OrderEvent.Completted;
@@ -21,15 +22,18 @@ public class OrderInventoryEventProcessor implements OrderEventProcessor<Invento
 
   @Override
   public Mono<InventoryEvent> handle(Created e) {
-    return service.deduct(e.toRequest())
+    var req = InventoryDeductionRequest.builder()
+          .orderId(e.orderId())
+          .items(e.items())
+          .customerId(e.customerId())
+          .build();
+
+    return service.deduct(req)
       .doOnNext(r -> log.info("Inventory deducted for Order: {}", r))
       .map(r -> InventoryEvent.Deducted.builder()
         .orderId(e.orderId())
-        .productId(r.getInventoryId())
         .customerId(null) // TODO: add customer id
-        .quantity(r.getQuantity())
-        .unitPrice(0) // TODO: add unit price
-        .totalAmount(0) // TODO: add total amount
+        .items(e.items())
         .build());
   }
 
@@ -39,11 +43,8 @@ public class OrderInventoryEventProcessor implements OrderEventProcessor<Invento
       .doOnNext(r -> log.info("Inventory restored for Order: {}", r))
       .map(r -> InventoryEvent.Restored.builder()
         .orderId(e.orderId())
-        .productId(r.get(0).getInventoryId())
         .customerId(null) // TODO: add customer id
-        .quantity(r.get(0).getQuantity())
-        .unitPrice(0) // TODO: add unit price
-        .totalAmount(0) // TODO: add total amount
+        .items(e.items())
         .build()
       );
   }

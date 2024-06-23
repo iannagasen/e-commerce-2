@@ -1,4 +1,4 @@
-package dev.agasen.ecom.api.core.payment.model;
+package dev.agasen.ecom.api.core.order.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

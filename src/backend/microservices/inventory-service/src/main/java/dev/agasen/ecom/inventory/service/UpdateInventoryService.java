@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 
 public interface UpdateInventoryService {
 
-  Mono<InventoryUpdateEntity> deduct(InventoryDeductionRequest req);
+  Mono<List<InventoryUpdateEntity>> deduct(InventoryDeductionRequest req);
 
   /**
    * 

@@ -1,8 +1,10 @@
 package dev.agasen.ecom.api.saga.order.events;
 
 import java.time.Instant;
+import java.util.List;
 
 import dev.agasen.ecom.api.core.inventory.model.InventoryDeductionRequest;
+import dev.agasen.ecom.api.core.order.model.OrderItem;
 import dev.agasen.ecom.api.messaging.DomainEvent;
 import dev.agasen.ecom.api.saga.order.OrderSaga;
 import lombok.Builder;
@@ -14,33 +16,20 @@ public sealed interface OrderEvent extends DomainEvent, OrderSaga permits OrderE
                  Instant createdAt,
                  Long productId,
                  Long customerId,
-                 int quantity,
-                 int totalAmount) implements OrderEvent {}
+                //  int quantity,
+                //  int totalAmount
+                 List<OrderItem> items
+                 ) implements OrderEvent {}
 
   @Builder
   record Cancelled(Long orderId,
                    Instant createdAt,
+                   List<OrderItem> items,
                    String message) implements OrderEvent {};
 
   @Builder
   record Completted(Long orderId,
+                    List<OrderItem> items,
                     Instant createdAt) implements OrderEvent {};
-
-  
-  default InventoryDeductionRequest toRequest() {
-    switch (this) {
-      case Created event -> {
-        return InventoryDeductionRequest.builder()
-          .orderId(event.orderId())
-          .productId(event.productId())
-          .customerId(event.customerId())
-          .quantity(event.quantity())
-          .build();
-      }
-      default -> throw new UnsupportedOperationException("Can not convert to request " + this);
-      
-    }
-
-  }
 
 }

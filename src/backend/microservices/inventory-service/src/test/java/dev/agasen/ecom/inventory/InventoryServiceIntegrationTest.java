@@ -14,6 +14,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import dev.agasen.ecom.api.core.inventory.model.InventoryDeductionRequest;
 import dev.agasen.ecom.api.core.inventory.model.InventoryUpdateType;
+import dev.agasen.ecom.api.core.order.model.OrderItem;
 import dev.agasen.ecom.inventory.repository.InventoryEntity;
 import dev.agasen.ecom.inventory.repository.InventoryRepository;
 import dev.agasen.ecom.inventory.repository.InventoryUpdateEntity;
@@ -88,16 +89,17 @@ public class InventoryServiceIntegrationTest extends MongoDBTestBase {
   @Test
   void testDeduct() {
     var deduct_5_fromStockOf30 = InventoryDeductionRequest.builder()
-      .productId(1L)
+      .items(List.of(OrderItem.builder().productId(1L).quantity(5).build()))
       .orderId(1L)
       .customerId(1L)
-      .quantity(5)
       .build();
 
-    Mono<InventoryUpdateEntity> deductMono = inventoryService.deduct(deduct_5_fromStockOf30);
+    Mono<List<InventoryUpdateEntity>> deductMono = inventoryService.deduct(deduct_5_fromStockOf30);
 
     StepVerifier.create(deductMono)
-      .assertNext(update -> {
+      .assertNext(updates -> {
+        var update = updates.get(0);
+
         assertEquals(1L, update.getInventoryId(), 0);
         assertEquals(1L, update.getOrderId(), 0);
         assertEquals(InventoryUpdateType.PURCHASE, update.getType());
@@ -124,16 +126,16 @@ public class InventoryServiceIntegrationTest extends MongoDBTestBase {
       .verifyComplete();
 
     var deduct_6_fromStockof20_productId_2L = InventoryDeductionRequest.builder()
-      .productId(2L)
+      .items(List.of(OrderItem.builder().productId(2L).quantity(6).build()))
       .orderId(2L)
       .customerId(1L)
-      .quantity(6)
       .build();
 
-    Mono<InventoryUpdateEntity> deductMono2 = inventoryService.deduct(deduct_6_fromStockof20_productId_2L);
+    Mono<List<InventoryUpdateEntity>> deductMono2 = inventoryService.deduct(deduct_6_fromStockof20_productId_2L);
 
     StepVerifier.create(deductMono2)
-      .assertNext(update -> {
+      .assertNext(updates -> {
+        var update = updates.get(0);
         assertEquals(2L, update.getInventoryId(), 0);
         assertEquals(2L, update.getOrderId(), 0);
         assertEquals(InventoryUpdateType.PURCHASE, update.getType());
@@ -163,13 +165,12 @@ public class InventoryServiceIntegrationTest extends MongoDBTestBase {
   @Test
   void testDeductWithInsufficientStock() {
     var deduct_15_fromStockOf10 = InventoryDeductionRequest.builder()
-      .productId(1L)
+      .items(List.of(OrderItem.builder().productId(1L).quantity(15).build()))
       .orderId(1L)
       .customerId(1L)
-      .quantity(15) // 15 is greater than stock of 10
       .build();
 
-    Mono<InventoryUpdateEntity> deductMono = inventoryService.deduct(deduct_15_fromStockOf10);
+    Mono<List<InventoryUpdateEntity>> deductMono = inventoryService.deduct(deduct_15_fromStockOf10);
 
     StepVerifier.create(deductMono)
       .expectErrorMatches(e ->

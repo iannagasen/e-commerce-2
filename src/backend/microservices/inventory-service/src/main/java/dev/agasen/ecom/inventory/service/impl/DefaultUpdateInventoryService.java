@@ -12,6 +12,7 @@ import dev.agasen.ecom.inventory.repository.InventoryUpdateRepository;
 import dev.agasen.ecom.inventory.service.UpdateInventoryService;
 import dev.agasen.ecom.util.mongo.SequenceGeneratorService;
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -24,19 +25,22 @@ public class DefaultUpdateInventoryService implements UpdateInventoryService {
 
 
   @Override
-  public Mono<InventoryUpdateEntity> deduct(InventoryDeductionRequest req) {
-    return inventoryRepo.findByProductId(req.getProductId())
-      .switchIfEmpty(Mono.error(new RuntimeException("Inventory not found for product: " + req.getProductId())))
-      .filter(i -> i.getStock() >= req.getQuantity())
-      .switchIfEmpty(Mono.error(new RuntimeException("Insufficient stock for product: " + req.getProductId())))
-      // perform deduction
-      .doOnNext(inv -> inv.deduct(req.getQuantity()))
-      .flatMap(inventoryRepo::save)
-      .zipWith(sequenceGenerator.generateSequence(InventoryUpdateEntity.SEQUENCE_NAME)
-          .map(updateId -> InventoryUpdateEntity.newDeductionUpdate(updateId, req.getProductId(), req.getOrderId(), req.getQuantity()))
-          .flatMap(updateRepo::save),
-          (inv, update) -> update
-      );
+  public Mono<List<InventoryUpdateEntity>> deduct(InventoryDeductionRequest req) {
+    return Flux.fromIterable(req.getItems())
+      .flatMap(item -> inventoryRepo.findByProductId(item.getProductId())
+          .switchIfEmpty(Mono.error(new RuntimeException("Inventory not found for product: " + item.getProductId())))
+          .filter(i -> i.getStock() >= item.getQuantity())
+          .switchIfEmpty(Mono.error(new RuntimeException("Insufficient stock for product: " + item.getProductId())))
+          // perform deduction
+          .doOnNext(inv -> inv.deduct(item.getQuantity()))
+          .flatMap(inventoryRepo::save)
+          .zipWith(sequenceGenerator.generateSequence(InventoryUpdateEntity.SEQUENCE_NAME)
+              .map(updateId -> InventoryUpdateEntity.newDeductionUpdate(updateId, item.getProductId(), req.getOrderId(), item.getQuantity()))
+              .flatMap(updateRepo::save),
+              (inv, update) -> update
+          )
+      )
+      .collectList();
   }
 
   @Override

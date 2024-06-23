@@ -1,5 +1,8 @@
 package dev.agasen.ecom.api.core.inventory.model;
 
+import java.util.List;
+
+import dev.agasen.ecom.api.core.order.model.OrderItem;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,8 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class InventoryDeductionRequest {
-  private Long productId;
   private Long orderId;
   private Long customerId;
-  private int quantity;
+  private List<OrderItem> items;
 }
