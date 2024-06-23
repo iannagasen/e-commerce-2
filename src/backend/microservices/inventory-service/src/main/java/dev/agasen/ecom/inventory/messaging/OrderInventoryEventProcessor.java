@@ -7,7 +7,7 @@ import dev.agasen.ecom.api.saga.order.events.OrderEvent.Cancelled;
 import dev.agasen.ecom.api.saga.order.events.OrderEvent.Completted;
 import dev.agasen.ecom.api.saga.order.events.OrderEvent.Created;
 import dev.agasen.ecom.api.saga.order.processor.OrderEventProcessor;
-import dev.agasen.ecom.inventory.service.InventoryService;
+import dev.agasen.ecom.inventory.service.UpdateInventoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
@@ -17,7 +17,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class OrderInventoryEventProcessor implements OrderEventProcessor<InventoryEvent> {
 
-  private final InventoryService service;
+  private final UpdateInventoryService service;
 
   @Override
   public Mono<InventoryEvent> handle(Created e) {
@@ -25,23 +25,32 @@ public class OrderInventoryEventProcessor implements OrderEventProcessor<Invento
       .doOnNext(r -> log.info("Inventory deducted for Order: {}", r))
       .map(r -> InventoryEvent.Deducted.builder()
         .orderId(e.orderId())
-        .createdAt(e.createdAt())
-        .productId(e.productId())
-        .customerId(e.customerId())
-        .quantity(e.quantity())
-        .totalAmount(e.totalAmount())
+        .productId(r.getInventoryId())
+        .customerId(null) // TODO: add customer id
+        .quantity(r.getQuantity())
+        .unitPrice(0) // TODO: add unit price
+        .totalAmount(0) // TODO: add total amount
+        .build());
+  }
+
+  @Override
+  public Mono<InventoryEvent> handle(Cancelled e) {
+    return service.restoreUpdate(e.orderId())
+      .doOnNext(r -> log.info("Inventory restored for Order: {}", r))
+      .map(r -> InventoryEvent.Restored.builder()
+        .orderId(e.orderId())
+        .productId(r.get(0).getInventoryId())
+        .customerId(null) // TODO: add customer id
+        .quantity(r.get(0).getQuantity())
+        .unitPrice(0) // TODO: add unit price
+        .totalAmount(0) // TODO: add total amount
         .build()
       );
   }
 
   @Override
-  public Mono<InventoryEvent> handle(Cancelled arg0) {
-    throw new UnsupportedOperationException("Unimplemented method 'handle'");
-  }
-
-  @Override
   public Mono<InventoryEvent> handle(Completted arg0) {
-    throw new UnsupportedOperationException("Unimplemented method 'handle'");
+    return Mono.empty();
   }
   
 }

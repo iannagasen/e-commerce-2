@@ -15,16 +15,16 @@ import dev.agasen.ecom.inventory.repository.InventoryEntity;
 import dev.agasen.ecom.inventory.repository.InventoryRepository;
 import dev.agasen.ecom.inventory.repository.InventoryUpdateEntity;
 import dev.agasen.ecom.inventory.repository.InventoryUpdateRepository;
-import dev.agasen.ecom.inventory.service.InventoryService;
+import dev.agasen.ecom.inventory.service.UpdateInventoryService;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @SpringBootTest
-public class InventoryServiceIntegrationTest extends MongoDBTestBase {
+public class InventoryServiceIntegrationTest extends KafkaMessagingTestBase {
 
   @Autowired private InventoryRepository inventoryRepository;
   @Autowired private InventoryUpdateRepository updateRepository;
-  @Autowired private InventoryService inventoryService;
+  @Autowired private UpdateInventoryService inventoryService;
 
 
   @BeforeEach
@@ -81,9 +81,19 @@ public class InventoryServiceIntegrationTest extends MongoDBTestBase {
       .quantity(5)
       .build();
 
-    Mono<InventoryEntity> deductMono = inventoryService.deduct(deduct_5_fromStockOf30);
+    Mono<InventoryUpdateEntity> deductMono = inventoryService.deduct(deduct_5_fromStockOf30);
 
     StepVerifier.create(deductMono)
+      .assertNext(update -> {
+        assertEquals(1L, update.getUpdateId(), 0);
+        assertEquals(1L, update.getInventoryId(), 0);
+        assertEquals(1L, update.getOrderId(), 0);
+        assertEquals(InventoryUpdateType.PURCHASE, update.getType());
+        assertEquals(5, update.getQuantity());
+      })
+      .verifyComplete();
+
+    StepVerifier.create(inventoryRepository.findByProductId(1L))
       .assertNext(inv -> {
         assertEquals(5, inv.getStock(), 0);
         assertEquals(1L, inv.getInventoryId(), 0);
@@ -102,9 +112,19 @@ public class InventoryServiceIntegrationTest extends MongoDBTestBase {
       .quantity(6)
       .build();
 
-    Mono<InventoryEntity> deductMono2 = inventoryService.deduct(deduct_6_fromStockof20_productId_2L);
+    Mono<InventoryUpdateEntity> deductMono2 = inventoryService.deduct(deduct_6_fromStockof20_productId_2L);
 
     StepVerifier.create(deductMono2)
+      .assertNext(update -> {
+        assertEquals(3L, update.getUpdateId(), 0);
+        assertEquals(2L, update.getInventoryId(), 0);
+        assertEquals(2L, update.getOrderId(), 0);
+        assertEquals(InventoryUpdateType.PURCHASE, update.getType());
+        assertEquals(6, update.getQuantity());
+      })
+      .verifyComplete();
+
+    StepVerifier.create(inventoryRepository.findByProductId(2L))
       .assertNext(inv -> {
         assertEquals(14, inv.getStock(), 0);
         assertEquals(2L, inv.getInventoryId(), 0);
@@ -126,7 +146,7 @@ public class InventoryServiceIntegrationTest extends MongoDBTestBase {
       .quantity(15) // 15 is greater than stock of 10
       .build();
 
-    Mono<InventoryEntity> deductMono = inventoryService.deduct(deduct_15_fromStockOf10);
+    Mono<InventoryUpdateEntity> deductMono = inventoryService.deduct(deduct_15_fromStockOf10);
 
     StepVerifier.create(deductMono)
       .expectErrorMatches(e ->
@@ -139,9 +159,20 @@ public class InventoryServiceIntegrationTest extends MongoDBTestBase {
   void testRestore() {
     var restore_orderId_10 = 10L;
 
-    Mono<InventoryEntity> restoreMono = inventoryService.restore(restore_orderId_10);
+    Mono<List<InventoryUpdateEntity>> restoreMono = inventoryService.restoreUpdate(restore_orderId_10);
 
     StepVerifier.create(restoreMono)
+      .assertNext(updates -> {
+        assertEquals(1, updates.size());
+        assertEquals(3L, updates.get(0).getUpdateId(), 0);
+        assertEquals(2L, updates.get(0).getInventoryId(), 0);
+        assertEquals(10L, updates.get(0).getOrderId(), 0);
+        assertEquals(InventoryUpdateType.PURCHASE, updates.get(0).getType());
+        assertEquals(6, updates.get(0).getQuantity());
+      })
+      .verifyComplete();
+
+    StepVerifier.create(inventoryRepository.findByProductId(10L))
       .assertNext(inv -> {
         assertEquals(25, inv.getStock(), 0);
         assertEquals(2L, inv.getInventoryId(), 0);

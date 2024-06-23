@@ -3,6 +3,7 @@ package dev.agasen.ecom.inventory.repository;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface InventoryUpdateRepository extends ReactiveMongoRepository<InventoryUpdateEntity, String> {
   
@@ -14,6 +15,5 @@ public interface InventoryUpdateRepository extends ReactiveMongoRepository<Inven
   }
 
   Flux<InventoryUpdateEntity> findAllByOrderId(Long orderId);
-
 
 }

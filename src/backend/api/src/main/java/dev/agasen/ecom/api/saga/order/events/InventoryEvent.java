@@ -16,7 +16,8 @@ public sealed interface InventoryEvent extends DomainEvent, OrderSaga permits In
                   Long customerId,
                   int quantity,
                   int unitPrice,
-                  int totalAmount) implements InventoryEvent {}
+                  int totalAmount) implements InventoryEvent {
+  }
 
   @Builder
   record Restored(Long orderId,
@@ -25,7 +26,8 @@ public sealed interface InventoryEvent extends DomainEvent, OrderSaga permits In
                   Long customerId,
                   int quantity,
                   int unitPrice,
-                  int totalAmount) implements InventoryEvent {}
+                  int totalAmount) implements InventoryEvent {
+  }
 
   @Builder
   record Declined(Long orderId,
@@ -33,13 +35,5 @@ public sealed interface InventoryEvent extends DomainEvent, OrderSaga permits In
                   String message) implements InventoryEvent {}
 
 
-  static InventoryEvent.Deducted toInventoryDeductedEvent(Inventory inv, Long orderId) {
-    return InventoryEvent.Deducted.builder()
-      .orderId(orderId)
-      .productId(inv.getProductId())
-      .quantity(inv.getStock())
-      // .totalAmount(inv.getStock() * inv.getPrice())
-      .build();
 
-  }
 }

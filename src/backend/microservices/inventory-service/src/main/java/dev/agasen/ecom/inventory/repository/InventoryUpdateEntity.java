@@ -22,7 +22,7 @@ import lombok.Setter;
 @Document(collection = "inventory_updates")
 public class InventoryUpdateEntity implements InventoryUpdate {
 
-  public @Transient static final String SEQUENCE_NAME = "product-inventory";
+  public @Transient static final String SEQUENCE_NAME = "product-inventory-update-sequence";
 
   private @Id String id;
   private @Indexed(unique=true) Long updateId;
@@ -36,5 +36,29 @@ public class InventoryUpdateEntity implements InventoryUpdate {
     this.updateId = updateId;
     return this;
   }
+
+   public static InventoryUpdateEntity newDeductionUpdate(Long updateId, Long inventoryId, Long orderId, int quantity) {
+    return new InventoryUpdateEntity(
+      null,
+      updateId,
+      inventoryId,
+      orderId,
+      InventoryUpdateType.PURCHASE,
+      quantity,
+      LocalDateTime.now()
+    );
+   }
+
+    public static InventoryUpdateEntity newRestoreUpdate(Long updateId, Long inventoryId, Long orderId, int quantity) {
+      return new InventoryUpdateEntity(
+        null,
+        updateId,
+        inventoryId,
+        orderId,
+        InventoryUpdateType.CUSTOMER_RETURN,
+        quantity,
+        LocalDateTime.now()
+      );
+   }
 
 }

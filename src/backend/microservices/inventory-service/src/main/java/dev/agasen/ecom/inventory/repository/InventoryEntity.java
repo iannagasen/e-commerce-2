@@ -22,7 +22,7 @@ import lombok.Setter;
 @Document(collection = "inventory")
 public class InventoryEntity implements Inventory {
   
-  public @Transient static final String SEQUENCE_NAME = "product-inventory";
+  public @Transient static final String SEQUENCE_NAME = "product-inventory-sequence";
 
   private @Id String id;
   private @Indexed(unique=true) Long inventoryId;

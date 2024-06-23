@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
-public class InventoryService {
+ class InventoryService {
 
   private final InventoryRepository inventoryRepo;
   private final InventoryUpdateRepository updateRepo;
@@ -49,7 +49,7 @@ public class InventoryService {
           .zipWhen(inv -> seqGen.generateSequence(InventoryUpdateEntity.SEQUENCE_NAME)
               .map(seq -> InventoryUpdateEntity.builder()
                   .updateId(seq)
-                  .inventoryId(inv.getInventoryId())
+                  .inventoryId(update.getInventoryId())
                   .orderId(orderId)
                   .type(InventoryUpdateType.CUSTOMER_RETURN)
                   .quantity(update.getQuantity())
