@@ -96,10 +96,35 @@ public class PaymentServiceIntegrationTest extends MongoDBTestBase {
     StepVerifier.create(balanceRepo.findByCustomerId(2L))
       .assertNext(balance -> {
         assertEquals(2000L - 200L, balance.getAmount(), 0);
+        assertEquals(0, 0);
       })
       .verifyComplete();
-
   }
+
+  @Test
+  void testPaymentInsufficientBalance() {
+    var paymentReq = OrderPaymentRequest.builder()
+      .orderId(100L)
+      .customerId(2L)
+      .orderItems(List.of(
+        OrderItem.builder().productId(1L).price(3000L).quantity(2).build()
+      ))
+      .build();
+  
+    StepVerifier.create(service.processPayment(paymentReq))
+      .expectErrorMatches(e -> 
+          e instanceof RuntimeException &&
+          e.getMessage().equals("Insufficient balance for customer: 2"))
+      .verify();
+
+    StepVerifier.create(balanceRepo.findByCustomerId(2L))
+      .assertNext(balance -> {
+        assertEquals(2000L, balance.getAmount(), 0);
+      })
+      .verifyComplete();
+  }
+
+
   
 
 
