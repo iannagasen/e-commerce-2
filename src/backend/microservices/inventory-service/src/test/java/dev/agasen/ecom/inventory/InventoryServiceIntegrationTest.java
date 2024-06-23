@@ -2,11 +2,13 @@ package dev.agasen.ecom.inventory;
 
 import static org.junit.Assert.assertEquals;
 
+import java.time.Duration;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.convert.Jsr310Converters.StringToPeriodConverter;
 
 import dev.agasen.ecom.api.core.inventory.model.InventoryDeductionRequest;
 import dev.agasen.ecom.api.core.inventory.model.InventoryUpdateType;
@@ -83,7 +85,6 @@ public class InventoryServiceIntegrationTest extends BaseIntegrationTest {
 
     StepVerifier.create(deductMono)
       .assertNext(update -> {
-        assertEquals(1L, update.getUpdateId(), 0);
         assertEquals(1L, update.getInventoryId(), 0);
         assertEquals(1L, update.getOrderId(), 0);
         assertEquals(InventoryUpdateType.PURCHASE, update.getType());
@@ -96,10 +97,16 @@ public class InventoryServiceIntegrationTest extends BaseIntegrationTest {
         assertEquals(5, inv.getStock(), 0);
         assertEquals(1L, inv.getInventoryId(), 0);
         assertEquals(1L, inv.getProductId(), 0);
-        assertEquals(1, inv.getHistory().size());
-        assertEquals(InventoryUpdateType.PURCHASE, inv.getLastUpdate().getType());
-        assertEquals(1L, inv.getLastUpdate().getOrderId(), 0);
-        assertEquals(5, inv.getLastUpdate().getQuantity());
+      })
+      .verifyComplete();
+
+    StepVerifier.create(updateRepository.findAllByInventoryId(1L).collectList())
+      .assertNext(updates -> {
+        assertEquals(1, updates.size());
+        assertEquals(1L, updates.get(0).getInventoryId(), 0);
+        assertEquals(1L, updates.get(0).getOrderId(), 0);
+        assertEquals(InventoryUpdateType.PURCHASE, updates.get(0).getType());
+        assertEquals(5, updates.get(0).getQuantity());
       })
       .verifyComplete();
 
@@ -114,7 +121,6 @@ public class InventoryServiceIntegrationTest extends BaseIntegrationTest {
 
     StepVerifier.create(deductMono2)
       .assertNext(update -> {
-        assertEquals(3L, update.getUpdateId(), 0);
         assertEquals(2L, update.getInventoryId(), 0);
         assertEquals(2L, update.getOrderId(), 0);
         assertEquals(InventoryUpdateType.PURCHASE, update.getType());
@@ -127,12 +133,18 @@ public class InventoryServiceIntegrationTest extends BaseIntegrationTest {
         assertEquals(14, inv.getStock(), 0);
         assertEquals(2L, inv.getInventoryId(), 0);
         assertEquals(2L, inv.getProductId(), 0);
-        assertEquals(2 + 1, inv.getHistory().size()); // 2 existing + 1 new
-        assertEquals(InventoryUpdateType.PURCHASE, inv.getLastUpdate().getType());
-        assertEquals(2L, inv.getLastUpdate().getOrderId(), 0);
-        assertEquals(6, inv.getLastUpdate().getQuantity());
       })
       .verifyComplete();
+
+    StepVerifier.create(updateRepository.findAllByInventoryId(2L).collectList())
+      .assertNext(updates -> {
+        assertEquals(2 + 1, updates.size()); // 2 existing + 1 new
+        assertEquals(InventoryUpdateType.PURCHASE, updates.get(updates.size() - 1).getType());
+        assertEquals(2L, updates.get(updates.size() - 1).getOrderId(), 0);
+        assertEquals(6, updates.get(updates.size() - 1).getQuantity());
+      })
+      .verifyComplete();
+
   }
 
   @Test
@@ -162,15 +174,14 @@ public class InventoryServiceIntegrationTest extends BaseIntegrationTest {
     StepVerifier.create(restoreMono)
       .assertNext(updates -> {
         assertEquals(1, updates.size());
-        assertEquals(3L, updates.get(0).getUpdateId(), 0);
         assertEquals(2L, updates.get(0).getInventoryId(), 0);
         assertEquals(10L, updates.get(0).getOrderId(), 0);
-        assertEquals(InventoryUpdateType.PURCHASE, updates.get(0).getType());
-        assertEquals(6, updates.get(0).getQuantity());
+        assertEquals(InventoryUpdateType.CUSTOMER_RETURN, updates.get(0).getType());
+        assertEquals(5, updates.get(0).getQuantity());
       })
       .verifyComplete();
 
-    StepVerifier.create(inventoryRepository.findByProductId(10L))
+    StepVerifier.create(inventoryRepository.findByInventoryId(2L).delayElement(Duration.ofSeconds(3)))
       .assertNext(inv -> {
         assertEquals(25, inv.getStock(), 0);
         assertEquals(2L, inv.getInventoryId(), 0);

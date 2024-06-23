@@ -47,10 +47,11 @@ public class DefaultUpdateInventoryService implements UpdateInventoryService {
           .generateSequence(InventoryUpdateEntity.SEQUENCE_NAME)
           .map(updateId -> InventoryUpdateEntity.newRestoreUpdate(updateId, update.getInventoryId(), orderId, update.getQuantity()))
           .flatMap(updateRepo::save)
-      )
-      .doOnNext(update -> inventoryRepo.findByInventoryId(update.getInventoryId())
-          .map(inv -> inv.restore(update.getQuantity()))
-          .flatMap(inventoryRepo::save)
+          .zipWith(inventoryRepo.findByInventoryId(update.getInventoryId())
+              .map(inv -> inv.restore(update.getQuantity()))
+              .flatMap(inventoryRepo::save),
+              (updateEntity, inventoryEntity) -> updateEntity
+          )
       )
       .collectList();
   }
