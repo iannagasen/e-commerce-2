@@ -8,7 +8,9 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.convert.Jsr310Converters.StringToPeriodConverter;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.test.context.EmbeddedKafka;
+import org.springframework.test.annotation.DirtiesContext;
 
 import dev.agasen.ecom.api.core.inventory.model.InventoryDeductionRequest;
 import dev.agasen.ecom.api.core.inventory.model.InventoryUpdateType;
@@ -20,7 +22,18 @@ import dev.agasen.ecom.inventory.service.UpdateInventoryService;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-public class InventoryServiceIntegrationTest extends BaseIntegrationTest {
+@DirtiesContext
+@SpringBootTest(properties={
+  "logging.level.root=ERROR",
+  "logging.level.dev.agasen*=INFO",
+  "spring.cloud.stream.kafka.binder.configuration.auto.offset.reset=earliest",
+  "spring.cloud.stream.kafka.binder.brokers=localhost:9092"
+})
+@EmbeddedKafka(
+  partitions = 1,
+  bootstrapServersProperty = "spring.kafka.bootstrap-servers"
+)
+public class InventoryServiceIntegrationTest extends MongoDBTestBase {
 
   @Autowired private InventoryRepository inventoryRepository;
   @Autowired private InventoryUpdateRepository updateRepository;
