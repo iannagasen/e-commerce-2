@@ -30,4 +30,9 @@ public class BalanceEntity implements Balance {
     return this;
   }
 
+  public BalanceEntity refund(PaymentEntity payment) {
+    this.amount += payment.totalAmount();
+    return this;
+  }
+
 }

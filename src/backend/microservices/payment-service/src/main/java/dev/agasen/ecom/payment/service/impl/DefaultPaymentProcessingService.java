@@ -3,6 +3,7 @@ package dev.agasen.ecom.payment.service.impl;
 import org.springframework.stereotype.Service;
 
 import dev.agasen.ecom.api.core.payment.model.OrderPaymentRequest;
+import dev.agasen.ecom.api.core.payment.model.TransactionType;
 import dev.agasen.ecom.payment.persistence.BalanceRepository;
 import dev.agasen.ecom.payment.persistence.PaymentEntity;
 import dev.agasen.ecom.payment.persistence.PaymentRepository;
@@ -36,7 +37,18 @@ public class DefaultPaymentProcessingService implements PaymentProcessingService
 
   @Override
   public Mono<PaymentEntity> refundPayment(Long orderId) {
-    throw new UnsupportedOperationException("Unimplemented method 'refundPayment'");
+    return paymentRepo.findByOrderIdAndTransactionType(orderId, TransactionType.PAYMENT)
+      .switchIfEmpty(Mono.error(new RuntimeException("Payment not found for order: " + orderId)))
+      .flatMap(payment -> balanceRepo.findByCustomerId(payment.getCustomerId())
+          .doOnNext(balance -> balance.refund(payment))
+          .flatMap(balanceRepo::save)
+          .zipWith(sequenceGenerator.generateSequence(PaymentEntity.SEQUENCE_NAME)
+              .map(paymentId -> PaymentEntity.newRefund(paymentId, orderId, payment.getCustomerId(), payment.getOrderItems()))
+              .flatMap(paymentRepo::save),
+              (bal, pmt) -> pmt
+          )
+      );
   }
+
   
 }

@@ -44,6 +44,10 @@ public class PaymentEntity implements Payment  {
     return new PaymentEntity(null, paymentId, orderId, customerId, orderItems, TransactionType.PAYMENT, LocalDateTime.now());
   }
 
+  public static PaymentEntity newRefund(Long paymentId, Long orderId, Long customerId, List<OrderItem> orderItems) {
+    return new PaymentEntity(null, paymentId, orderId, customerId, orderItems, TransactionType.REFUND, LocalDateTime.now());
+  }
+
 
 
 }

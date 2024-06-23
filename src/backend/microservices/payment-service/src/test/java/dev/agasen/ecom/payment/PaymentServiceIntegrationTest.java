@@ -125,6 +125,36 @@ public class PaymentServiceIntegrationTest extends MongoDBTestBase {
   }
 
 
+  @Test
+  void testRefund() {
+    StepVerifier.create(service.refundPayment(1L))
+      .assertNext(payment -> {
+        assertNotNull(payment.getPaymentId());
+        assertNotNull(payment.getTransactionDate());
+        assertEquals(1L, payment.getOrderId(), 0);
+        assertEquals(1L, payment.getCustomerId(), 0);
+        assertEquals(2, payment.getOrderItems().size());
+        assertEquals(TransactionType.REFUND, payment.getTransactionType());
+      })
+      .verifyComplete();
+
+    StepVerifier.create(balanceRepo.findByCustomerId(1L))
+      .assertNext(balance -> {
+        assertEquals(1250L, balance.getAmount(), 0);
+      })
+      .verifyComplete();
+
+    StepVerifier.create(paymentRepo.findAllByOrderId(1L).collectList())
+      .assertNext(payments -> {
+        assertEquals(2, payments.size());
+        assertEquals(TransactionType.PAYMENT, payments.get(0).getTransactionType());
+        assertEquals(TransactionType.REFUND, payments.get(1).getTransactionType());
+      })
+      .verifyComplete();
+  }
+
+
+
   
 
 
