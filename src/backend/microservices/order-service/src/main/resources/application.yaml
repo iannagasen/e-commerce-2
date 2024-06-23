@@ -1,0 +1,37 @@
+spring.application.name: order-service
+
+spring.cloud.function:
+  definition: orderEventProducer;paymentProcessor;inventoryProcessor
+
+spring.cloud.stream:
+  default.producer.useNativeEncoding: true
+  bindings:
+    orderEventProducer-out-0:
+      destination: order-events
+    paymentProcessor-in-0:
+      destination: payment-events
+      group: order-service-group
+    paymentProcessor-out-0:
+      destination: processed-order-components
+    inventoryProcessor-in-0:
+      destination: inventory-events
+      group: order-service-group  
+    inventoryProcessor-out-0:
+      destination: processed-inventory-components
+    # shippingProcessor-in-0:
+    #   destination: shipping-events
+    #   group: order-service-group
+    # shippingProcessor-out-0:
+    #   destination: processed-order
+
+  kafka:
+    binder:
+      brokers: "localhost:9094"
+      consumer-properties:
+        "value.deserializer": org.springframework.kafka.support.serializer.JsonDeserializer
+        "key.deserializer": org.apache.kafka.common.serialization.StringDeserializer
+        "auto.offset.reset": "earliest"
+        "spring.json.trusted.packages": "*" 
+      producer-properties:
+        "value.serializer": org.springframework.kafka.support.serializer.JsonSerializer
+        "key.serializer": org.apache.kafka.common.serialization.StringSerializer

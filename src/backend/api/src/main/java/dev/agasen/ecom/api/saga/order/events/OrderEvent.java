@@ -14,7 +14,6 @@ public sealed interface OrderEvent extends DomainEvent, OrderSaga permits OrderE
   @Builder
   record Created(Long orderId,
                  Instant createdAt,
-                 Long productId,
                  Long customerId,
                 //  int quantity,
                 //  int totalAmount

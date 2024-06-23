@@ -94,7 +94,6 @@ public class PaymentEventProcessorIntegrationTest extends BaseKafkaIntegrationTe
     var orderCreatedEvent = OrderEvent.Created.builder()
       .orderId(1L)
       .customerId(customerId)
-      .productId(1L)
       .items(List.of(
           OrderItem.builder().productId(1L).price(100L).quantity(4).build(),
           OrderItem.builder().productId(2L).price(50L).quantity(3).build()

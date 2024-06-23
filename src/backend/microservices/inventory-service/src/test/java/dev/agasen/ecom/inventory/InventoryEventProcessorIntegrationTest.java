@@ -85,7 +85,7 @@ public class InventoryEventProcessorIntegrationTest extends BaseIntegrationTest 
     var orderCreatedEvent = OrderEvent.Created.builder()
       .orderId(1L)
       .customerId(customerId)
-      .productId(1L)
+      // .productId(1L)
       .items(List.of(OrderItem.builder().productId(1L).quantity(quantity).build()))
       .createdAt(Instant.now())
       .build();
