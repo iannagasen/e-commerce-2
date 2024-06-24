@@ -46,11 +46,11 @@ public class OrderPaymentEventProcessor implements OrderEventProcessor<PaymentEv
   @Override
   public Mono<PaymentEvent> handle(Cancelled event) {
     return service.refundPayment(event.orderId())
-      .doOnNext(payment -> log.info("Payment refunded for Order: ", payment.getOrderId()))
-      .map(payment -> PaymentEvent.Refunded.builder()
+      .doOnNext(payment -> log.info("Payment cancelled for Order: ", payment.getOrderId()))
+      .map(payment -> PaymentEvent.Declined.builder()
         .orderId(payment.getOrderId())
         .customerId(payment.getCustomerId())
-        .amountRefunded(payment.totalAmount())
+        .amount(payment.totalAmount())
         .createdAt(Instant.now())
         .message(event.message())
         .build()

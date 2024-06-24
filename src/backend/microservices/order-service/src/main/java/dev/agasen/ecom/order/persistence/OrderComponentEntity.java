@@ -38,13 +38,32 @@ public abstract class OrderComponentEntity {
   @Document(collection="order_component")
   @AllArgsConstructor
   public static class Inventory extends OrderComponentEntity {
-    private Long inventoryId;
     private @Setter ParticipantStatus status;
     private @Setter boolean successful;
     private @Setter String message;
 
     public String getComponentName() {
       return "order_inventory";
+    }
+
+    public static Inventory newSuccessful(Long componentId, ParticipantStatus status, Long orderId, String message) {
+      return Inventory.builder()
+          .successful(true)
+          .componentId(componentId)
+          .status(status)
+          .message(message)
+          .orderId(orderId)
+          .build();
+    }
+
+    public static Inventory newUnsuccessful(Long componentId, ParticipantStatus status, Long orderId, String message) {
+      return Inventory.builder()
+          .successful(false)
+          .componentId(componentId)
+          .status(status)
+          .message(message)
+          .orderId(orderId)
+          .build();
     }
   }
 
@@ -54,13 +73,32 @@ public abstract class OrderComponentEntity {
   @Document(collection="order_component")
   @AllArgsConstructor
   public static class Payment extends OrderComponentEntity {
-    private Long paymentId;
     private @Setter ParticipantStatus status;
     private @Setter boolean successful;
     private @Setter String message;
 
     public String getComponentName() {
       return "order_payment";
+    }
+
+    public static Payment newSuccessful(Long componentId, ParticipantStatus status, Long orderId, String message) {
+      return Payment.builder()
+          .successful(true)
+          .componentId(componentId)
+          .status(status)
+          .message(message)
+          .orderId(orderId)
+          .build();
+    }
+
+    public static Payment newUnsuccessful(Long componentId, ParticipantStatus status, Long orderId, String message) {
+      return Payment.builder()
+          .successful(false)
+          .componentId(componentId)
+          .status(status)
+          .message(message)
+          .orderId(orderId)
+          .build();
     }
   }
   

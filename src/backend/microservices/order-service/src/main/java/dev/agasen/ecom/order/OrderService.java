@@ -1,4 +1,4 @@
-package dev.agasen.ecom.order.service;
+package dev.agasen.ecom.order;
 
 import dev.agasen.ecom.api.core.order.model.CreateOrderRequest;
 import dev.agasen.ecom.order.persistence.PurchaseOrderEntity;

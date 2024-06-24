@@ -12,7 +12,7 @@ import reactor.core.publisher.Sinks;
 public class OrderEventListenerConfig {
   
   @Bean
-  public OrderEventListener orderEventListener(){
+  public DefaultOrderEventListener orderEventListener(){
     var sink = Sinks.many().unicast().<OrderEvent>onBackpressureBuffer();
     var flux = sink.asFlux();
     return new DefaultOrderEventListener(sink, flux);

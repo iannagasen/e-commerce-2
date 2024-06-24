@@ -6,7 +6,7 @@ import dev.agasen.ecom.api.messaging.DomainEvent;
 import dev.agasen.ecom.api.saga.order.OrderSaga;
 import lombok.Builder;
 
-public sealed interface PaymentEvent extends DomainEvent, OrderSaga permits PaymentEvent.Completted, PaymentEvent.Refunded, PaymentEvent.Processed {
+public sealed interface PaymentEvent extends DomainEvent, OrderSaga permits PaymentEvent.Declined, PaymentEvent.Refunded, PaymentEvent.Processed {
   
   @Builder
   record Processed(
@@ -26,11 +26,12 @@ public sealed interface PaymentEvent extends DomainEvent, OrderSaga permits Paym
   ) implements PaymentEvent {}
 
   @Builder
-  record Completted(
+  record Declined(
       Long orderId,
       Instant createdAt,
       Long amount,
-      Long customerId
+      Long customerId,
+      String message
   ) implements PaymentEvent {}
 
 }

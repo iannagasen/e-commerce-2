@@ -1,11 +1,11 @@
-package dev.agasen.ecom.order.service.impl;
+package dev.agasen.ecom.order.service;
 
 import org.springframework.stereotype.Service;
 
 import dev.agasen.ecom.api.core.order.model.CreateOrderRequest;
+import dev.agasen.ecom.order.OrderService;
 import dev.agasen.ecom.order.persistence.PurchaseOrderEntity;
 import dev.agasen.ecom.order.persistence.PurchaseOrderRepository;
-import dev.agasen.ecom.order.service.OrderService;
 import dev.agasen.ecom.util.mongo.SequenceGeneratorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
