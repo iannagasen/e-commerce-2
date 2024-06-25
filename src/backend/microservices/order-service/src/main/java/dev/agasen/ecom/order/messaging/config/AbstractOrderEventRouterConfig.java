@@ -16,6 +16,9 @@ import reactor.core.publisher.Flux;
 @Slf4j
 public abstract class AbstractOrderEventRouterConfig {
 
+  private static final String DESTINATION_HEADER = "spring.cloud.stream.sendto.destination";
+  private static final String ORDER_EVENTS_CHANNEL = "order-events-channel";
+
   protected <T extends DomainEvent> Function<Flux<Message<T>>, Flux<Message<OrderEvent>>> processor(EventProcessor<T, OrderEvent> processor) {
     return flux -> flux
         .map(MessageConverter::toRecord)
@@ -26,8 +29,10 @@ public abstract class AbstractOrderEventRouterConfig {
   }
 
   protected Message<OrderEvent> toMessage(OrderEvent event) {
+    log.info("order service produced {}", event);
     return MessageBuilder.withPayload(event)
-          .setHeader(KafkaHeaders.KEY, event.orderId().toString())
-          .build();
-  }
+                         .setHeader(KafkaHeaders.KEY, event.orderId().toString())
+                         .setHeader(DESTINATION_HEADER, ORDER_EVENTS_CHANNEL)
+                         .build();
+}
 }

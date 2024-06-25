@@ -18,7 +18,7 @@ public class DefaultOrderEventListener implements OrderEventListener, EventPubli
 
   @Override
   public Flux<OrderEvent> publish() {
-    return this.flux;
+    return this.flux.doOnNext(e -> System.out.println("DefaultOrderEventListener == received message " + e));
   }
 
   @Override
@@ -30,7 +30,8 @@ public class DefaultOrderEventListener implements OrderEventListener, EventPubli
         .items(order.getItems())
         .build(),
       Sinks.EmitFailureHandler.busyLooping(Duration.ofSeconds(1))
-    );
+    )
+    ;
   }
   
 }

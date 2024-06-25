@@ -15,9 +15,8 @@ spring.cloud:
     default.producer.useNativeEncoding: true
     bindings:
       orderEventRouter-in-0:
-        # we are consuming from order-events topic
         destination: order-events
-        group: inventory-group
+        group: inventory-service-group
       orderEventRouter-out-0 :
         destination: inventory-events
     kafka:

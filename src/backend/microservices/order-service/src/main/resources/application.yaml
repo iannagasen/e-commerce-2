@@ -1,23 +1,28 @@
 spring.application.name: order-service
 
+spring.data.mongodb:
+  host: localhost
+  port: 27018
+  database: order-db
+
 spring.cloud.function:
   definition: orderEventProducer;paymentProcessor;inventoryProcessor
 
 spring.cloud.stream:
   default.producer.useNativeEncoding: true
   bindings:
-    orderEventProducer-out-0:
+    order-events-channel:
       destination: order-events
     paymentProcessor-in-0:
       destination: payment-events
       group: order-service-group
-    paymentProcessor-out-0:
-      destination: processed-order-components
+    # paymentProcessor-out-0:
+    #   destination: processed-order-components
     inventoryProcessor-in-0:
       destination: inventory-events
       group: order-service-group  
-    inventoryProcessor-out-0:
-      destination: processed-inventory-components
+    # inventoryProcessor-out-0:
+    #   destination: processed-inventory-components
     # shippingProcessor-in-0:
     #   destination: shipping-events
     #   group: order-service-group

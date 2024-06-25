@@ -37,7 +37,8 @@ public class OrderEventRouterConfig extends AbstractOrderEventRouterConfig {
   @Bean
   public Supplier<Flux<Message<OrderEvent>>> orderEventProducer() {
       return () -> this.eventPublisher.publish()
-                                      .map(super::toMessage);
+        .doOnNext(m -> System.out.println("received message " + m))
+        .map(super::toMessage);
   }
 
 }

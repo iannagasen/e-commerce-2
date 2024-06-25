@@ -14,12 +14,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Document(collection="purchase_order")
+@ToString
 public class PurchaseOrderEntity implements PurchaseOrder {
 
   public static final String SEQUENCE_NAME = "purchase_order_sequence";

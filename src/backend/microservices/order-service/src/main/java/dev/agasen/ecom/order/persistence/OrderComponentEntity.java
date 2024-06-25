@@ -10,12 +10,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
 @Document(collection="order_components")
 @Getter
 @NoArgsConstructor
+@ToString
 public abstract class OrderComponentEntity {
 
   public static final String SEQUENCE_NAME = "order_component_sequence";
@@ -37,6 +39,7 @@ public abstract class OrderComponentEntity {
   @TypeAlias("order_inventory")
   @Document(collection="order_component")
   @AllArgsConstructor
+  @ToString
   public static class Inventory extends OrderComponentEntity {
     private @Setter ParticipantStatus status;
     private @Setter boolean successful;
@@ -72,6 +75,7 @@ public abstract class OrderComponentEntity {
   @TypeAlias("order_payment")
   @Document(collection="order_component")
   @AllArgsConstructor
+  @ToString
   public static class Payment extends OrderComponentEntity {
     private @Setter ParticipantStatus status;
     private @Setter boolean successful;

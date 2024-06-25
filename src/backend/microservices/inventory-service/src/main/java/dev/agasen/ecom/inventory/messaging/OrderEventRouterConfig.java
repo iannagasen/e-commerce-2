@@ -25,13 +25,15 @@ public class OrderEventRouterConfig {
   @Bean
   public Function<Flux<Message<OrderEvent>>, Flux<Message<InventoryEvent>>> orderEventRouter() {
     return orderEventFlux -> orderEventFlux
+      .doFirst(() -> log.info("Received order events"))
       .map(MessageConverter::toRecord)
       .doOnNext(orderEvent -> log.info("Received order event: {}", orderEvent))
       .concatMap(orderRecord -> processor
           .process(orderRecord.message())
           .doOnSuccess(inventoryEvent -> log.info("Processed order event: {}", orderRecord))
       )
-      .map(this::toMessage);
+      .map(this::toMessage)
+      .doOnError(e -> log.error("Error processing order event", e));
   }
 
   private Message<InventoryEvent> toMessage(InventoryEvent event) {

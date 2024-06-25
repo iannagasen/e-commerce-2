@@ -2,6 +2,7 @@ package dev.agasen.ecom.payment.messaging;
 
 import java.util.function.Function;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.kafka.support.KafkaHeaders;
@@ -23,15 +24,18 @@ public class OrderEventRouterConfig {
   
   private final OrderEventProcessor<PaymentEvent> processor;
 
+  @Bean
   public Function<Flux<Message<OrderEvent>>, Flux<Message<PaymentEvent>>> orderEventRouter() {
     return orderEventFlux -> orderEventFlux
+      .doFirst(() -> log.info("Received order events"))
       .map(MessageConverter::toRecord)
       .doOnNext(orderEvent -> log.info("Received order event: {}", orderEvent))
       .concatMap(orderRecord -> processor
           .process(orderRecord.message())
           .doOnSuccess(paymentEvent -> log.info("Processed order event: {}", orderRecord))
       )
-      .map(this::toMessage);
+      .map(this::toMessage)
+      .doOnError(e -> log.error("Error processing order event", e));
   }
 
   private Message<PaymentEvent> toMessage(PaymentEvent event) {
