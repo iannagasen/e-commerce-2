@@ -1,5 +1,6 @@
 package dev.agasen.ecom.order.service;
 
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import dev.agasen.ecom.api.saga.order.status.OrderStatus;
@@ -10,6 +11,7 @@ import dev.agasen.ecom.order.persistence.PurchaseOrderEntity;
 import dev.agasen.ecom.order.persistence.PurchaseOrderRepository;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +26,8 @@ public class DefaultOrderFulfillmentService implements OrderFulfillmentService {
         .filter(components -> components.stream().allMatch(OrderComponentEntity::isSuccessful))
         .flatMap(components -> purchaseOrderRepository.findByOrderId(orderId))
         .doOnNext(purchaseOrder -> purchaseOrder.setOrderStatus(OrderStatus.COMPLETED))
-        .flatMap(purchaseOrderRepository::save);
+        .flatMap(purchaseOrderRepository::save)
+        .retryWhen(Retry.max(1).filter(OptimisticLockingFailureException.class::isInstance));
   }
 
   @Override
@@ -32,7 +35,8 @@ public class DefaultOrderFulfillmentService implements OrderFulfillmentService {
     return purchaseOrderRepository.findByOrderId(orderId)
         .filter(order -> order.getOrderStatus() == OrderStatus.PENDING)
         .doOnNext(order -> order.setOrderStatus(OrderStatus.CANCELLED))
-        .flatMap(purchaseOrderRepository::save);
+        .flatMap(purchaseOrderRepository::save)
+        .retryWhen(Retry.max(1).filter(OptimisticLockingFailureException.class::isInstance));
   }
   
 }

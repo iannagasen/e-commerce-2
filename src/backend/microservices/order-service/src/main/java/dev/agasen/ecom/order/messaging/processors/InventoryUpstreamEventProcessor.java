@@ -23,6 +23,7 @@ public class InventoryUpstreamEventProcessor implements InventoryEventProcessor<
 
   @Override
   public Mono<OrderEvent> handle(Deducted event) {
+    System.out.println("Inventory Event Deducted processed: " + event);
     return inventoryService.doOnSuccess(event.orderId())
       .then(fulfillmentService.complete(event.orderId()))
       .map(order -> OrderEvent.Completted.builder()
@@ -30,7 +31,8 @@ public class InventoryUpstreamEventProcessor implements InventoryEventProcessor<
           .items(order.getItems())
           .createdAt(Instant.now())
           .build()
-      );
+      )
+      ;
   }
 
   @Override

@@ -23,6 +23,7 @@ public class PaymentUpstreamEventProcessor implements PaymentEventProcessor<Orde
 
   @Override
   public Mono<OrderEvent> handle(Processed event) {
+    System.out.println("Payment Event Deducted processed: " + event);
     return paymentService.doOnSuccess(event.orderId())
       .then(fulfillmentService.complete(event.orderId()))
       .map(order -> OrderEvent.Completted.builder()

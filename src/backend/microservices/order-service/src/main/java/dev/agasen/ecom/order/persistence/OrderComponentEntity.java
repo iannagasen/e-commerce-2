@@ -3,6 +3,7 @@ package dev.agasen.ecom.order.persistence;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.annotation.TypeAlias;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -12,7 +13,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 
 @Document(collection="order_components")
 @Getter
@@ -23,6 +23,7 @@ public abstract class OrderComponentEntity {
   public static final String SEQUENCE_NAME = "order_component_sequence";
 
   protected @Id String id;
+  protected @Version Integer version;
   protected @Indexed(unique=true) Long componentId;
   protected @Indexed(unique=true) Long orderId;
 
@@ -34,8 +35,9 @@ public abstract class OrderComponentEntity {
   public abstract ParticipantStatus getStatus();
   public abstract void setStatus(ParticipantStatus status);
 
-  protected OrderComponentEntity(String id, Long componentId, Long orderId) {
+  protected OrderComponentEntity(String id, Integer version, Long componentId, Long orderId) {
     this.id = id;
+    this.version = version;
     this.componentId = componentId;
     this.orderId = orderId;
   }
@@ -52,10 +54,10 @@ public abstract class OrderComponentEntity {
 
     @PersistenceCreator
     public Inventory(
-        String id, Long componentId, Long orderId,
+        String id, Integer version, Long componentId, Long orderId, 
         ParticipantStatus status, boolean successful, String message
     ) {
-      super(id, componentId, orderId);
+      super(id, version, componentId, orderId);
       this.status = status;
       this.successful = successful;
       this.message = message;
@@ -66,11 +68,11 @@ public abstract class OrderComponentEntity {
     }
 
     public static Inventory newSuccessful(Long componentId, ParticipantStatus status, Long orderId, String message) {
-      return new Inventory(null, componentId, orderId, status, true, message);
+      return new Inventory(null, null, componentId, orderId, status, true, message);
     }
 
     public static Inventory newUnsuccessful(Long componentId, ParticipantStatus status, Long orderId, String message) {
-      return new Inventory(null, componentId, orderId, status, false, message);
+      return new Inventory(null, null, componentId, orderId, status, false, message);
     }
   }
 
@@ -85,10 +87,10 @@ public abstract class OrderComponentEntity {
 
     @PersistenceCreator
     public Payment(
-        String id, Long componentId, Long orderId,
+        String id, Integer version, Long componentId, Long orderId, 
         ParticipantStatus status, boolean successful, String message
     ) {
-      super(id, componentId, orderId);
+      super(id, version, componentId, orderId);
       this.status = status;
       this.successful = successful;
       this.message = message;
@@ -99,11 +101,11 @@ public abstract class OrderComponentEntity {
     }
 
     public static Payment newSuccessful(Long componentId, ParticipantStatus status, Long orderId, String message) {
-      return new Payment(null, componentId, orderId, status, true, message);
+      return new Payment(null, null, componentId, orderId, status, true, message);
     }
 
     public static Payment newUnsuccessful(Long componentId, ParticipantStatus status, Long orderId, String message) {
-      return new Payment(null, componentId, orderId, status, false, message);
+      return new Payment(null, null, componentId, orderId, status, false, message);
     }
   }
   

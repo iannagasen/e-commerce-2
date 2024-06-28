@@ -8,6 +8,7 @@ import dev.agasen.ecom.api.core.order.model.OrderItem;
 import dev.agasen.ecom.api.messaging.DomainEvent;
 import dev.agasen.ecom.api.saga.order.OrderSaga;
 import lombok.Builder;
+import lombok.ToString;
 
 public sealed interface OrderEvent extends DomainEvent, OrderSaga permits OrderEvent.Created, OrderEvent.Cancelled, OrderEvent.Completted {
   

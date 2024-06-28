@@ -3,6 +3,7 @@ package dev.agasen.ecom.order.persistence;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -27,6 +28,7 @@ public class PurchaseOrderEntity implements PurchaseOrder {
   public static final String SEQUENCE_NAME = "purchase_order_sequence";
 
   private @Id String id;
+  private @Version Integer version;
   private @Indexed(unique=true) Long orderId;
   private Long customerId;
   private List<OrderItem> items;

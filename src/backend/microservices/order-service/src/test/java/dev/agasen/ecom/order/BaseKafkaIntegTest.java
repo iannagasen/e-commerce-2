@@ -18,8 +18,10 @@ import dev.agasen.ecom.api.core.order.model.CreateOrderRequest;
 import dev.agasen.ecom.api.saga.order.events.InventoryEvent;
 import dev.agasen.ecom.api.saga.order.events.OrderEvent;
 import dev.agasen.ecom.api.saga.order.events.PaymentEvent;
+import dev.agasen.ecom.order.persistence.OrderComponentRepository;
 import dev.agasen.ecom.order.persistence.OrderComponentEntity.Payment;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 import reactor.test.StepVerifier;
 
@@ -47,6 +49,8 @@ public class BaseKafkaIntegTest extends BaseMongoDBIntegTest {
   // @Autowired WebTestClient client;
   @Autowired OrderService orderService;
   @Autowired StreamBridge streamBridge;
+
+  @Autowired OrderComponentRepository orderComponentRepository;
 
   // what we are consuming
   static final Sinks.Many<OrderEvent> responseSink = Sinks.many().unicast().onBackpressureBuffer();
@@ -92,7 +96,7 @@ public class BaseKafkaIntegTest extends BaseMongoDBIntegTest {
   protected <T> void expectEvent(Class<T> type, Consumer<T> assertion) {
     responseFlux
       .next()
-      .timeout(Duration.ofSeconds(5))
+      .timeout(Duration.ofSeconds(5), Mono.empty())
       .cast(type)
       .as(StepVerifier::create)
       .consumeNextWith(assertion)
