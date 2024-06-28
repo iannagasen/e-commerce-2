@@ -30,10 +30,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 import reactor.test.StepVerifier;
 
-@EmbeddedKafka(
-  partitions = 1,
-  bootstrapServersProperty = "spring.kafka.bootstrap-servers"
-)
 @TestPropertySource(properties = {
   // ! orderEventRouter = our application, orderEventProduucer & paymentEventConsumer = see TestConfiguration below
   "spring.cloud.function.definition=orderEventRouter;orderEventProducer;paymentEventConsumer",

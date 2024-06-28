@@ -1,4 +1,4 @@
-package dev.agasen.ecom.payment;
+package dev.agasen.ecom.order;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.test.context.EmbeddedKafka;
@@ -15,6 +15,6 @@ import org.springframework.test.annotation.DirtiesContext;
   partitions = 1,
   bootstrapServersProperty = "spring.kafka.bootstrap-servers"
 )
-public class BaseKafkaIntegrationTest extends MongoDBTestBase {
+public class BaseKafkaIntegTest extends BaseMongoDBIntegTest {
   
 }
