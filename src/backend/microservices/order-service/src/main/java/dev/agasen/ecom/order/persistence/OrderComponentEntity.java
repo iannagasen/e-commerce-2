@@ -1,6 +1,7 @@
 package dev.agasen.ecom.order.persistence;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -13,7 +14,6 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
-@SuperBuilder
 @Document(collection="order_components")
 @Getter
 @NoArgsConstructor
@@ -34,8 +34,13 @@ public abstract class OrderComponentEntity {
   public abstract ParticipantStatus getStatus();
   public abstract void setStatus(ParticipantStatus status);
 
+  protected OrderComponentEntity(String id, Long componentId, Long orderId) {
+    this.id = id;
+    this.componentId = componentId;
+    this.orderId = orderId;
+  }
+
   @Getter   
-  @SuperBuilder
   @TypeAlias("order_inventory")
   @Document(collection="order_component")
   @AllArgsConstructor
@@ -45,64 +50,60 @@ public abstract class OrderComponentEntity {
     private @Setter boolean successful;
     private @Setter String message;
 
+    @PersistenceCreator
+    public Inventory(
+        String id, Long componentId, Long orderId,
+        ParticipantStatus status, boolean successful, String message
+    ) {
+      super(id, componentId, orderId);
+      this.status = status;
+      this.successful = successful;
+      this.message = message;
+    }
+
     public String getComponentName() {
       return "order_inventory";
     }
 
     public static Inventory newSuccessful(Long componentId, ParticipantStatus status, Long orderId, String message) {
-      return Inventory.builder()
-          .successful(true)
-          .componentId(componentId)
-          .status(status)
-          .message(message)
-          .orderId(orderId)
-          .build();
+      return new Inventory(null, componentId, orderId, status, true, message);
     }
 
     public static Inventory newUnsuccessful(Long componentId, ParticipantStatus status, Long orderId, String message) {
-      return Inventory.builder()
-          .successful(false)
-          .componentId(componentId)
-          .status(status)
-          .message(message)
-          .orderId(orderId)
-          .build();
+      return new Inventory(null, componentId, orderId, status, false, message);
     }
   }
 
   @Getter
-  @SuperBuilder
   @TypeAlias("order_payment")
   @Document(collection="order_component")
-  @AllArgsConstructor
   @ToString
   public static class Payment extends OrderComponentEntity {
     private @Setter ParticipantStatus status;
     private @Setter boolean successful;
     private @Setter String message;
 
+    @PersistenceCreator
+    public Payment(
+        String id, Long componentId, Long orderId,
+        ParticipantStatus status, boolean successful, String message
+    ) {
+      super(id, componentId, orderId);
+      this.status = status;
+      this.successful = successful;
+      this.message = message;
+    }
+
     public String getComponentName() {
       return "order_payment";
     }
 
     public static Payment newSuccessful(Long componentId, ParticipantStatus status, Long orderId, String message) {
-      return Payment.builder()
-          .successful(true)
-          .componentId(componentId)
-          .status(status)
-          .message(message)
-          .orderId(orderId)
-          .build();
+      return new Payment(null, componentId, orderId, status, true, message);
     }
 
     public static Payment newUnsuccessful(Long componentId, ParticipantStatus status, Long orderId, String message) {
-      return Payment.builder()
-          .successful(false)
-          .componentId(componentId)
-          .status(status)
-          .message(message)
-          .orderId(orderId)
-          .build();
+      return new Payment(null, componentId, orderId, status, false, message);
     }
   }
   
