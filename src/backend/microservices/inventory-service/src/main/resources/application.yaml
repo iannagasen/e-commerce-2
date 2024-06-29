@@ -41,4 +41,17 @@ spring.cloud:
           # "bootstrap.servers": "localhost:9094"
           "value.serializer": org.springframework.kafka.support.serializer.JsonSerializer
           "key.serializer": org.apache.kafka.common.serialization.StringSerializer
+
+
+app.eureka-server: localhost
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${app.eureka-server}:8761/eureka/
+    initialInstanceInfoReplicationIntervalSeconds: 5
+    registryFetchIntervalSeconds: 5
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 5
             
