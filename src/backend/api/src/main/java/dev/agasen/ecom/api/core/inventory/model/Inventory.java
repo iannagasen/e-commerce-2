@@ -21,4 +21,5 @@ public class Inventory {
   private int stock;
   @JsonInclude(JsonInclude.Include.NON_NULL)
   private List<InventoryUpdate> history;
+    
 }

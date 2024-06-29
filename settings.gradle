@@ -5,6 +5,7 @@ include ':src:backend:util'
 include ':src:backend:microservices:inventory-service'
 include ':src:backend:microservices:payment-service'
 include ':src:backend:microservices:order-service'
+include ':src:backend:spring-cloud:discovery-server'
 // include ':src:backend:microservices:cart-service'
 // include ':src:backend:microservices:customer-payment-service'
 

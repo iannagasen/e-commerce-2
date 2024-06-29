@@ -28,7 +28,6 @@ public class InventoryEntity {
   private @Indexed(unique=true) Long inventoryId;
   private @Indexed(unique=true) Long productId;
   private int stock;
-
   private @Transient List<InventoryUpdate> history;
   private @Transient InventoryUpdate lastUpdate;
 
