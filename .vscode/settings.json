@@ -1,0 +1,16 @@
+{
+  "java.dependency.packagePresentation": "hierarchical",
+  "java.project.explorer.showNonJavaResources": true,
+  "java.dependency.syncWithFolderExplorer": true,
+  "explorer.compactFolders": true,
+  "java.completion.filteredTypes": [
+    "java.awt.*",
+    "com.sun.*",
+    "sun.*",
+    "jdk.*",
+    "org.graalvm.*",
+    "io.micrometer.shaded.*"
+  ],
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "java.compile.nullAnalysis.mode": "disabled"
+}
