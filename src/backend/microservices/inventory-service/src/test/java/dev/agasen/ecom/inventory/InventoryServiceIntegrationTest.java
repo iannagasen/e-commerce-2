@@ -19,7 +19,6 @@ import dev.agasen.ecom.inventory.repository.InventoryEntity;
 import dev.agasen.ecom.inventory.repository.InventoryRepository;
 import dev.agasen.ecom.inventory.repository.InventoryUpdateEntity;
 import dev.agasen.ecom.inventory.repository.InventoryUpdateRepository;
-import dev.agasen.ecom.inventory.service.UpdateInventoryService;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 

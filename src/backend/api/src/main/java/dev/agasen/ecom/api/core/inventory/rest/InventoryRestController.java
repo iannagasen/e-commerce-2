@@ -24,4 +24,4 @@ public interface InventoryRestController {
   @PostMapping("/inventory/deduct")
   Mono<Inventory> deduct(InventoryDeductionRequest req);
 
-}
+} 

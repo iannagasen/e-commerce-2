@@ -8,7 +8,7 @@ import dev.agasen.ecom.api.saga.order.events.OrderEvent.Cancelled;
 import dev.agasen.ecom.api.saga.order.events.OrderEvent.Completted;
 import dev.agasen.ecom.api.saga.order.events.OrderEvent.Created;
 import dev.agasen.ecom.api.saga.order.processor.OrderEventProcessor;
-import dev.agasen.ecom.inventory.service.UpdateInventoryService;
+import dev.agasen.ecom.inventory.UpdateInventoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;

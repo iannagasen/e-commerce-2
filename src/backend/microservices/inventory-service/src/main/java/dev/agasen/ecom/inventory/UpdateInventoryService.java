@@ -1,4 +1,4 @@
-package dev.agasen.ecom.inventory.service;
+package dev.agasen.ecom.inventory;
 
 import java.util.List;
 

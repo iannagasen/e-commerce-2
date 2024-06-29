@@ -1,4 +1,4 @@
-package dev.agasen.ecom.inventory.service.impl;
+package dev.agasen.ecom.inventory.service;
 
 import java.util.List;
 
@@ -6,10 +6,10 @@ import org.springframework.stereotype.Service;
 
 import dev.agasen.ecom.api.core.inventory.model.InventoryDeductionRequest;
 import dev.agasen.ecom.api.core.inventory.model.InventoryUpdateType;
+import dev.agasen.ecom.inventory.UpdateInventoryService;
 import dev.agasen.ecom.inventory.repository.InventoryRepository;
 import dev.agasen.ecom.inventory.repository.InventoryUpdateEntity;
 import dev.agasen.ecom.inventory.repository.InventoryUpdateRepository;
-import dev.agasen.ecom.inventory.service.UpdateInventoryService;
 import dev.agasen.ecom.util.mongo.SequenceGeneratorService;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;

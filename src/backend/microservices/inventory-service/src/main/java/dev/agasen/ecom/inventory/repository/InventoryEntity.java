@@ -53,4 +53,12 @@ public class InventoryEntity implements Inventory {
     return this;
   }
 
+  public InventoryEntity withHistory(List<InventoryUpdate> history) {
+    this.history = history;
+    if (history != null && !history.isEmpty()) {
+      this.lastUpdate = history.get(history.size() - 1);
+    }
+    return this;
+  }
+
 }
