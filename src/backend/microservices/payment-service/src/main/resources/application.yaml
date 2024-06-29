@@ -17,7 +17,7 @@ spring.cloud:
       orderEventRouter-in-0:
         # we are consuming from order-events topic
         destination: order-events
-        group: payment-group
+        group: payment-service-group
       orderEventRouter-out-0 :
         destination: payment-events
     kafka:

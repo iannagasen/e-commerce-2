@@ -21,7 +21,9 @@ public class OrderPaymentRequest {
 
   public Long totalAmount() {
     return orderItems.stream()
-        .mapToLong(item -> item.getPrice() * item.getQuantity())
+        // TODO: Handling now since price are somewhat null
+        // PRICE SHOULD NOT BE NULL !!!
+        .mapToLong(item -> (item.getPrice() != null ? item.getPrice() : 0) * item.getQuantity())
         .sum();
   }
 
