@@ -13,7 +13,7 @@ services:
       timeout: 2s
       retries: 60
     volumes:
-      - ./dump-scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./mongodb/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
   kafka:
     image: bitnami/kafka:3.3.2
