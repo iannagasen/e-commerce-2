@@ -4,18 +4,21 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-public interface Inventory {
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-  Long getInventoryId();
-  void setInventoryId(Long id);
-
-  Long getProductId();
-  void setProductId(Long productId);
-
-  int getStock();
-  void setStock(int stock);
-
-  @JsonInclude(JsonInclude.Include.NON_NULL) List<InventoryUpdate> getHistory();
-  void setHistory(List<InventoryUpdate> history);
-
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@Builder
+public class Inventory {
+  private Long inventoryId;
+  private Long productId;
+  private int stock;
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private List<InventoryUpdate> history;
 }

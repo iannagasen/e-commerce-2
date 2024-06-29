@@ -12,16 +12,21 @@ import reactor.core.publisher.Mono;
 
 public interface InventoryRestController {
 
-  @GetMapping("/inventory/{productId}")
+  String GET_INVENTORY_PATH = "/inventory/{productId}";
+  String GET_INVENTORIES_PATH = "/inventory";
+  String GET_INVENTORY_HISTORY_PATH = "/inventory/{productId}/history";
+  String DEDUCT_INVENTORY_PATH = "/inventory/deduct";
+
+  @GetMapping(GET_INVENTORY_PATH)
   Mono<Inventory> getInventory(@PathVariable Long productId);
 
-  @GetMapping("/inventory")
+  @GetMapping(GET_INVENTORIES_PATH)
   Flux<Inventory> getInventories();
 
-  @GetMapping("/inventory/{productId}/history")
-  Flux<InventoryUpdate> getInventoryHistory(@PathVariable Long productId);
+  @GetMapping(GET_INVENTORY_HISTORY_PATH)
+  Flux<InventoryUpdate> getInventoryHistory(@PathVariable("productId") Long productId);
 
-  @PostMapping("/inventory/deduct")
+  @PostMapping(DEDUCT_INVENTORY_PATH)
   Mono<Inventory> deduct(InventoryDeductionRequest req);
 
 } 

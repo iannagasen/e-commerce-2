@@ -1,4 +1,4 @@
 @BASE = http://localhost:8101/inventory
 
 ### GET ALL Product Inventory
-GET {{BASE}}/2
+GET {{BASE}}/1  

@@ -23,7 +23,7 @@ import lombok.ToString;
 @Builder
 @Document(collection="purchase_order")
 @ToString
-public class PurchaseOrderEntity implements PurchaseOrder {
+public class PurchaseOrderEntity {
 
   public static final String SEQUENCE_NAME = "purchase_order_sequence";
 
@@ -47,5 +47,12 @@ public class PurchaseOrderEntity implements PurchaseOrder {
       .build();
   }
 
-  
+  public PurchaseOrder toRestModel() {
+    return PurchaseOrder.builder()
+      .orderId(orderId)
+      .customerId(customerId)
+      .items(items)
+      .orderStatus(orderStatus)
+      .build();
+  }
 }

@@ -20,7 +20,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 @Document(collection = "inventory_updates")
-public class InventoryUpdateEntity implements InventoryUpdate {
+public class InventoryUpdateEntity {
 
   public @Transient static final String SEQUENCE_NAME = "product-inventory-update-sequence";
 
@@ -37,7 +37,18 @@ public class InventoryUpdateEntity implements InventoryUpdate {
     return this;
   }
 
-   public static InventoryUpdateEntity newDeductionUpdate(Long updateId, Long inventoryId, Long orderId, int quantity) {
+  public InventoryUpdate toInventoryUpdate() {
+    return InventoryUpdate.builder()
+      .updateId(updateId)
+      .inventoryId(inventoryId)
+      .orderId(orderId)
+      .type(type)
+      .quantity(quantity)
+      .createdAt(createdAt)
+      .build();
+  }
+
+  public static InventoryUpdateEntity newDeductionUpdate(Long updateId, Long inventoryId, Long orderId, int quantity) {
     return new InventoryUpdateEntity(
       null,
       updateId,
@@ -47,18 +58,18 @@ public class InventoryUpdateEntity implements InventoryUpdate {
       quantity,
       LocalDateTime.now()
     );
-   }
+  }
 
-    public static InventoryUpdateEntity newRestoreUpdate(Long updateId, Long inventoryId, Long orderId, int quantity) {
-      return new InventoryUpdateEntity(
-        null,
-        updateId,
-        inventoryId,
-        orderId,
-        InventoryUpdateType.CUSTOMER_RETURN,
-        quantity,
-        LocalDateTime.now()
-      );
-   }
+  public static InventoryUpdateEntity newRestoreUpdate(Long updateId, Long inventoryId, Long orderId, int quantity) {
+    return new InventoryUpdateEntity(
+      null,
+      updateId,
+      inventoryId,
+      orderId,
+      InventoryUpdateType.CUSTOMER_RETURN,
+      quantity,
+      LocalDateTime.now()
+    );
+  }
 
 }

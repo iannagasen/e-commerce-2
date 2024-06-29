@@ -9,6 +9,7 @@ import dev.agasen.ecom.api.core.inventory.model.Inventory;
 import dev.agasen.ecom.api.core.inventory.model.InventoryUpdate;
 import dev.agasen.ecom.inventory.repository.InventoryEntity;
 import dev.agasen.ecom.inventory.repository.InventoryRepository;
+import dev.agasen.ecom.inventory.repository.InventoryUpdateEntity;
 import dev.agasen.ecom.inventory.repository.InventoryUpdateRepository;
 import dev.agasen.ecom.inventory.rest.service.InventoryQueryService;
 import lombok.RequiredArgsConstructor;
@@ -26,11 +27,11 @@ public class DefaultInventoryQueryService implements InventoryQueryService {
     return inventoryRepository.findByProductId(productId)
       .zipWith(
           updateRepository.findAllByInventoryId(productId)
-            .cast(InventoryUpdate.class)
+            .map(InventoryUpdateEntity::toInventoryUpdate)
             .collectList(),
           (BiFunction<? super InventoryEntity, ? super List<InventoryUpdate>, ? extends InventoryEntity>) InventoryEntity::withHistory
       )
-      .cast(Inventory.class);
+      .map(InventoryEntity::toRestModel);
   }
 
 }

@@ -27,7 +27,7 @@ public class DefaultOrderService implements OrderService {
     return sequenceGenerator.generateSequence(PurchaseOrderEntity.SEQUENCE_NAME)
       .map(orderId -> PurchaseOrderEntity.fromPending(orderId, req.getCustomerId(), req.getItems()))
       .flatMap(purchaseOrderRepo::save)
-      .doOnNext(po -> orderEventListener.emitOrderCreatedEvent(po))
+      .doOnNext(po -> orderEventListener.emitOrderCreatedEvent(po.toRestModel()))
       .doOnSuccess(order -> log.info("Order placed: {}", order));
   }
   

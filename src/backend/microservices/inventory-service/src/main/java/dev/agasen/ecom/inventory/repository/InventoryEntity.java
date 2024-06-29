@@ -20,7 +20,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 @Document(collection = "inventory")
-public class InventoryEntity implements Inventory {
+public class InventoryEntity {
   
   public @Transient static final String SEQUENCE_NAME = "product-inventory-sequence";
 
@@ -59,6 +59,16 @@ public class InventoryEntity implements Inventory {
       this.lastUpdate = history.get(history.size() - 1);
     }
     return this;
+  }
+
+  public Inventory toRestModel() {
+    
+    return Inventory.builder()
+      .inventoryId(inventoryId)
+      .productId(productId)
+      .stock(stock)
+      .history(history)
+      .build();
   }
 
 }

@@ -1,5 +1,14 @@
 spring.application.name: order-service
 
+# CONSIDER USING/ADDING PROFILE FOR NETFLIX EUREKA
+# URL SHOULD BE: http:/${spring.application.name}
+# SAMPLE: http://payment-service INSTEAD OF http://localhost:8102
+app:
+  inventory:
+    host: http://localhost:8101
+  payment:
+    host: http://localhost:8102
+
 spring.data.mongodb:
   host: localhost
   port: 27018

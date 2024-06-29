@@ -41,8 +41,8 @@ public class PaymentServiceIntegrationTest extends MongoDBTestBase {
 
   @BeforeEach
   void setup() {
-    paymentRepo.deleteAll();
-    balanceRepo.deleteAll();
+    paymentRepo.deleteAll().block();
+    balanceRepo.deleteAll().block();
 
     BalanceEntity customerBalance1 = BalanceEntity.builder()
       .balanceId(1L)
