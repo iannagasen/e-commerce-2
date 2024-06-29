@@ -9,9 +9,11 @@ services:
     command: mongod
     healthcheck:
       test: "mongostat -n 1"
-      interval: 5s
+      interval: 120s
       timeout: 2s
       retries: 60
+    volumes:
+      - ./dump-scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
   kafka:
     image: bitnami/kafka:3.3.2
