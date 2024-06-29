@@ -33,3 +33,48 @@ inventory_db.inventory_updates.insertMany([
     createdAt: new Date(),
   }
 ]);
+
+payment_db = db.getSiblingDB('payment-db');
+
+payment_db.createCollection('balance');
+payment_db.balance.insertMany([
+  {
+    balanceId: 1,
+    customerId: 1,
+    amount: 10000
+  },
+  {
+    balanceId: 2,
+    customerId: 2,
+    amount: 20000
+  },
+  {
+    balanceId: 3,
+    customerId: 3,
+    amount: 30000
+  }
+]);
+
+payment_db.createCollection('payment');
+payment_db.payment.insertMany([
+  {
+    paymentId: 1,
+    orderId: 1,
+    customerId: 1,
+    orderItems:[
+      {
+        productId: 1,
+        quantity: 10,
+        price: 100
+      },
+      {
+        productId: 2,
+        quantity: 20,
+        price: 200
+      }
+    ],
+    transactionType: 'PAYMENT',
+    createdAt: new Date(),
+  }
+]);
+
