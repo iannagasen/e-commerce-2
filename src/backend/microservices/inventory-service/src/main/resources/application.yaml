@@ -25,7 +25,14 @@ spring.cloud:
         consumer-properties:
           "value.deserializer": org.springframework.kafka.support.serializer.JsonDeserializer
           "key.deserializer": org.apache.kafka.common.serialization.StringDeserializer
-          "auto.offset.reset": "earliest"
+
+          # TODO: Research more on this -- should be latest to not capture earlier messages
+          # "auto.offset.reset": "earliest"
+          "auto.offset.reset": "latest"
+          "auto.commit.interval.ms": "1000"
+          # what about enable.auto.commit????
+
+
           # "bootstrap.servers": "localhost:9094"
           # ? where the DomainEvent class is located -- why? 
           # "spring.json.trusted.packages": "dev.agasen.ecom.api.core.order.event.*"
