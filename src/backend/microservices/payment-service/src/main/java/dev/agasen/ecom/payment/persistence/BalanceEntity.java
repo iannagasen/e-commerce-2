@@ -16,7 +16,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Document(collection="balance")
 @Builder
-public class BalanceEntity implements Balance {
+public class BalanceEntity {
 
   public static final String SEQUENCE_NAME = "balance_sequence";
 

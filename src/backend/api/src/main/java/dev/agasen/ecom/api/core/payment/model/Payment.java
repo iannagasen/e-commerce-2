@@ -4,25 +4,24 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import dev.agasen.ecom.api.core.order.model.OrderItem;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-public interface Payment {
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class Payment {
 
-  Long getPaymentId();
-  void setPaymentId(Long paymentId);
-  
-  Long getOrderId();
-  void setOrderId(Long orderId);
-
-  Long getCustomerId();
-  void setCustomerId(Long customerId);
-
-  List<OrderItem> getOrderItems();
-  void setOrderItems(List<OrderItem> orderItems);
-
-  TransactionType getTransactionType();
-  void setTransactionType(TransactionType transactionType);
-
-  LocalDateTime getTransactionDate();
-  void setTransactionDate(LocalDateTime transactionDate);
+  private Long paymentId;
+  private Long orderId;
+  private Long customerId;
+  private List<OrderItem> orderItems;
+  private TransactionType transactionType;
+  private LocalDateTime transactionDate;
 
 }

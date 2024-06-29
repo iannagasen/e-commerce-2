@@ -21,7 +21,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Document(collection="payment")
 @Builder
-public class PaymentEntity implements Payment  {
+public class PaymentEntity {
   
   public static final String SEQUENCE_NAME = "payment_sequence";
 
