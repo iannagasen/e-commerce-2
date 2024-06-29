@@ -44,7 +44,13 @@ spring.cloud.stream:
       consumer-properties:
         "value.deserializer": org.springframework.kafka.support.serializer.JsonDeserializer
         "key.deserializer": org.apache.kafka.common.serialization.StringDeserializer
-        "auto.offset.reset": "earliest"
+        
+        # TODO: Research more on this -- should be latest to not capture earlier messages
+        # "auto.offset.reset": "earliest"
+        "auto.offset.reset": "latest"
+        "auto.commit.interval.ms": "1000"
+        # what about enable.auto.commit????
+
         "spring.json.trusted.packages": "*" 
       producer-properties:
         "value.serializer": org.springframework.kafka.support.serializer.JsonSerializer
