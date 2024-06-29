@@ -1,0 +1,52 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "OrderService",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "dev.agasen.ecom.order.OrderApplication",
+      "projectName": "order-service",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "InventoryService",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "dev.agasen.ecom.inventory.InventoryServiceApplication",
+      "projectName": "inventory-service",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "PaymentService",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "dev.agasen.ecom.payment.PaymentApplication",
+      "projectName": "payment-service",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "EurekaDiscoveryServer",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "dev.agasen.ecom.discovery.DiscoveryApplication",
+      "projectName": "discovery-server",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "OrderMicorservice",
+      "configurations": ["OrderService", "PaymentService", "InventoryService", "EurekaDiscoveryServer"],
+      // "preLaunchTask": "${defaultBuildTask}",
+      "stopAll": true
+    }
+  ]
+}
