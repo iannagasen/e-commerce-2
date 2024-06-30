@@ -18,6 +18,8 @@ import dev.agasen.ecom.api.core.order.model.CreateOrderRequest;
 import dev.agasen.ecom.api.saga.order.events.InventoryEvent;
 import dev.agasen.ecom.api.saga.order.events.OrderEvent;
 import dev.agasen.ecom.api.saga.order.events.PaymentEvent;
+import dev.agasen.ecom.api.saga.order.status.ParticipantStatus;
+import dev.agasen.ecom.order.persistence.OrderComponentEntity;
 import dev.agasen.ecom.order.persistence.OrderComponentRepository;
 import dev.agasen.ecom.order.persistence.OrderComponentEntity.Payment;
 import reactor.core.publisher.Flux;
@@ -71,6 +73,17 @@ public class BaseKafkaIntegTest extends BaseMongoDBIntegTest {
       assert e.orderId().equals(orderId);
       assertion.accept(e);
     });
+  }
+
+  protected void verifyOrderComponentsInPendingState(Long orderId) {
+    StepVerifier.create(orderComponentRepository.findAllByOrderId(orderId).collectList())
+      .consumeNextWith(components -> {
+        assert components.size() == 2;
+        assert components.stream().anyMatch(OrderComponentEntity.Inventory.class::isInstance);
+        assert components.stream().anyMatch(OrderComponentEntity.Payment.class::isInstance);
+        assert components.stream().map(OrderComponentEntity::getStatus).allMatch(ParticipantStatus.PENDING::equals);
+      })
+      .verifyComplete();
   }
 
   protected void verifyOrderCancelledEvent(Long orderId) {
