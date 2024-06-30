@@ -74,6 +74,10 @@ public abstract class OrderComponentEntity {
     public static Inventory newUnsuccessful(Long componentId, ParticipantStatus status, Long orderId, String message) {
       return new Inventory(null, null, componentId, orderId, status, false, message);
     }
+
+    public static Inventory newPending(Long componentId, Long orderId) {
+      return new Inventory(null, null, componentId, orderId, ParticipantStatus.PENDING, false, null);
+    }
   }
 
   @Getter
@@ -106,6 +110,10 @@ public abstract class OrderComponentEntity {
 
     public static Payment newUnsuccessful(Long componentId, ParticipantStatus status, Long orderId, String message) {
       return new Payment(null, null, componentId, orderId, status, false, message);
+    }
+
+    public static Payment newPending(Long componentId, Long orderId) {
+      return new Payment(null, null, componentId, orderId, ParticipantStatus.PENDING, false, null);
     }
   }
   

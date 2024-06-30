@@ -7,3 +7,6 @@ ERRORS:
     - Error during runtime/processing
     - usually runtime exception
     - or misconfiguration
+
+- If you supply a Mono using `.map()` it will not trigger that Mono
+  - always use `.flatMap()` when trying to sequencially trigger another Mono

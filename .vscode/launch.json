@@ -44,7 +44,7 @@
   "compounds": [
     {
       "name": "OrderMicorservice",
-      "configurations": ["OrderService", "PaymentService", "InventoryService", "EurekaDiscoveryServer"],
+      "configurations": ["EurekaDiscoveryServer", "OrderService", "PaymentService", "InventoryService"],
       // "preLaunchTask": "${defaultBuildTask}",
       "stopAll": true
     }
