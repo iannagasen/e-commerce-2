@@ -1,6 +1,9 @@
 server:
   port: 8761
 
+spring.output.ansi.enabled: ALWAYS
+logging.pattern.console: "%d{yyMMdd HH:mm:ss} %highlight(%-5level) %logger{15} - %highlight(%msg) %n"
+
 eureka:
   instance:
     hostname: localhost

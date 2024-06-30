@@ -1,5 +1,8 @@
 spring.application.name: order-service
 
+spring.output.ansi.enabled: ALWAYS
+logging.pattern.console: "%d{yyMMdd HH:mm:ss} %highlight(%-5level) %logger{15} - %highlight(%msg) %n"
+
 # CONSIDER USING/ADDING PROFILE FOR NETFLIX EUREKA
 # URL SHOULD BE: http:/${spring.application.name}
 # SAMPLE: http://payment-service INSTEAD OF http://localhost:8102
