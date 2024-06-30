@@ -6,4 +6,5 @@ TODO:
     - to prevent processing messages from the earliest
   - [ ] Add Product Service
     - consider using Redis since data on this service may be frequently retrieved
+  - [ ] Finish Workflow + complete test
   - [ ] add here
