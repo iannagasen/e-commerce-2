@@ -48,9 +48,7 @@ public class OrderSagaIntegrationTest extends BaseKafkaIntegTest {
 
 
     // check for order completed event
-    // TODO: this is not working since the order is not getting completed
-    // Logic was change
-    // this.verifyOrderComplettedEvent(orderIdRef);
+    this.verifyOrderComplettedEvent(orderIdRef);
 
 
   }

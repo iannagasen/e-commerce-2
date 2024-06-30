@@ -13,11 +13,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 @Document(collection="order_components")
 @Getter
 @NoArgsConstructor
 @ToString
+@Slf4j
 public abstract class OrderComponentEntity {
 
   public static final String SEQUENCE_NAME = "order_component_sequence";
@@ -34,6 +36,18 @@ public abstract class OrderComponentEntity {
   public abstract void setMessage(String message);
   public abstract ParticipantStatus getStatus();
   public abstract void setStatus(ParticipantStatus status);
+
+  public void setCompletedAndSuccessful() {
+    log.info("setCompletedAndSuccessful called");
+    this.setStatus(ParticipantStatus.COMPLETED);
+    this.setSuccessful(true);
+  }
+
+  public void setComplettedButUnsuccessful(String message) {
+    this.setStatus(ParticipantStatus.COMPLETED);
+    this.setSuccessful(false);
+    this.setMessage(message);
+  }
 
   protected OrderComponentEntity(String id, Integer version, Long componentId, Long orderId) {
     this.id = id;

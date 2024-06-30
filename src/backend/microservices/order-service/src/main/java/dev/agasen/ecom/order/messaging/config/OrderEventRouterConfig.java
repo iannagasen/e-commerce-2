@@ -14,10 +14,12 @@ import dev.agasen.ecom.api.saga.order.events.PaymentEvent;
 import dev.agasen.ecom.api.saga.order.processor.InventoryEventProcessor;
 import dev.agasen.ecom.api.saga.order.processor.PaymentEventProcessor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class OrderEventRouterConfig extends AbstractOrderEventRouterConfig {
 
   private final EventPublisher<OrderEvent> eventPublisher;
@@ -37,7 +39,7 @@ public class OrderEventRouterConfig extends AbstractOrderEventRouterConfig {
   @Bean
   public Supplier<Flux<Message<OrderEvent>>> orderEventProducer() {
       return () -> this.eventPublisher.publish()
-        .doOnNext(m -> System.out.println("received message " + m))
+        .doOnNext(e -> log.info("OrderEventRouterConfig == received message " + e))
         .map(super::toMessage);
   }
 

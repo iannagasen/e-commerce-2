@@ -1,38 +1,33 @@
 package dev.agasen.ecom.order.service;
 
-import java.util.function.Supplier;
+import java.util.function.Consumer;
 
 import org.springframework.stereotype.Service;
 
 import dev.agasen.ecom.api.saga.order.status.ParticipantStatus;
 import dev.agasen.ecom.order.messaging.service.PaymentParticipantService;
 import dev.agasen.ecom.order.persistence.OrderComponentEntity;
+import dev.agasen.ecom.order.persistence.OrderComponentEntity.Payment;
 import dev.agasen.ecom.order.persistence.OrderComponentRepository;
-import dev.agasen.ecom.util.mongo.SequenceGeneratorService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DefaultPaymentParticipantService implements PaymentParticipantService {
 
   private final OrderComponentRepository repository;
-  private final SequenceGeneratorService sequenceGenerator;
 
   @Override
   public Mono<Void> doOnSuccess(Long orderId) {
-    return doIfNotYetProcessed(orderId, () -> sequenceGenerator.generateSequence(OrderComponentEntity.SEQUENCE_NAME)
-      .map(id -> OrderComponentEntity.Payment.newSuccessful(id, ParticipantStatus.COMPLETED, orderId, null))
-      .flatMap(repository::save)
-    );
+    return doIfNotYetProcessed(orderId, Payment::setCompletedAndSuccessful);
   }
 
   @Override
   public Mono<Void> doOnFailure(Long orderId) {
-    return doIfNotYetProcessed(orderId, () -> sequenceGenerator.generateSequence(OrderComponentEntity.SEQUENCE_NAME)
-      .map(id -> OrderComponentEntity.Payment.newUnsuccessful(id, ParticipantStatus.FAILED, orderId, null))
-      .flatMap(repository::save)
-    );
+    return doIfNotYetProcessed(orderId, pmt -> pmt.setComplettedButUnsuccessful(""));
   }
 
   @Override
@@ -43,11 +38,13 @@ public class DefaultPaymentParticipantService implements PaymentParticipantServi
       .then();
   } 
 
-  private Mono<Void> doIfNotYetProcessed(Long orderId, Supplier<Mono<OrderComponentEntity.Payment>> supplier) {
+  private Mono<Void> doIfNotYetProcessed(Long orderId, Consumer<OrderComponentEntity.Payment> mapper) {
     return repository.findOrderPaymentByOrderId(orderId)
-        // make sure it was not processed yet
-        // if it has already a component, then make sure to not process it to avoid duplication
-        .switchIfEmpty(Mono.defer(supplier))
+        .filter(inv -> inv.getStatus() == ParticipantStatus.PENDING)
+        .cast(OrderComponentEntity.Payment.class)
+        .doOnNext(inv -> log.info("Processing inventory component: {}", inv))
+        .doOnNext(mapper)
+        .flatMap(repository::save)
         .then();
   }
 

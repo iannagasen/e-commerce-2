@@ -10,10 +10,10 @@ public interface OrderComponentRepository extends ReactiveMongoRepository<OrderC
 
   Flux<OrderComponentEntity> findAllByOrderId(Long orderId);
 
-  @Query("{'orderId': ?0, '_class': 'dev.agasen.ecom.order.persistence.OrderComponentEntity$Payment'}")
-  Mono<OrderComponentEntity.Payment> findOrderPaymentByOrderId(Long orderId);
+  @Query("{'orderId': ?0, '_class': 'order_payment'}")
+  Mono<OrderComponentEntity> findOrderPaymentByOrderId(Long orderId);
 
-  @Query("{'orderId': ?0, '_class': 'dev.agasen.ecom.order.persistence.OrderComponentEntity$Inventory'}")
-  Mono<OrderComponentEntity.Inventory> findOrderInventoryByOrderId(Long orderId);
+  @Query("{'orderId': ?0, '_class': 'order_inventory'}")
+  Mono<OrderComponentEntity>  findOrderInventoryByOrderId(Long orderId);
   
 }

@@ -25,16 +25,13 @@ public class DefaultOrderFulfillmentService implements OrderFulfillmentService {
   @Override
   public Mono<PurchaseOrderEntity> complete(Long orderId) {
     return repo.findAllByOrderId(orderId).collectList()
-        .doOnNext(components -> {
-          log.info("components - {}", components);
-          components.forEach(component -> log.info("component - {}", component));
-        })
         // check if all components are successful
         .filter(components -> components.stream().allMatch(OrderComponentEntity::isSuccessful))
         .flatMap(components -> purchaseOrderRepository.findByOrderId(orderId))
         .doOnNext(purchaseOrder -> purchaseOrder.setOrderStatus(OrderStatus.COMPLETED))
         .flatMap(purchaseOrderRepository::save)
-        .retryWhen(Retry.max(1).filter(OptimisticLockingFailureException.class::isInstance));
+        .retryWhen(Retry.max(1).filter(OptimisticLockingFailureException.class::isInstance))
+        .doOnSuccess(order -> log.info("Order {} is completed", order));
   }
 
   @Override
