@@ -24,6 +24,7 @@ public sealed interface OrderEvent extends DomainEvent, OrderSaga permits OrderE
   @Builder
   record Cancelled(Long orderId,
                    Instant createdAt,
+                   Long customerId,
                    List<OrderItem> items,
                    String message) implements OrderEvent {};
 

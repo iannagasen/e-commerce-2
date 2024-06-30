@@ -86,6 +86,17 @@ public class BaseKafkaIntegTest extends BaseMongoDBIntegTest {
       .verifyComplete();
   }
 
+  protected void verifyOrderComponentsInCompletedState(Long orderId) {
+    StepVerifier.create(orderComponentRepository.findAllByOrderId(orderId).collectList())
+      .consumeNextWith(components -> {
+        assert components.size() == 2;
+        assert components.stream().anyMatch(OrderComponentEntity.Inventory.class::isInstance);
+        assert components.stream().anyMatch(OrderComponentEntity.Payment.class::isInstance);
+        assert components.stream().map(OrderComponentEntity::getStatus).allMatch(ParticipantStatus.COMPLETED::equals);
+      })
+      .verifyComplete();
+  }
+
   protected void verifyOrderCancelledEvent(Long orderId) {
     expectEvent(OrderEvent.Cancelled.class, e -> {
       assert e.orderId().equals(orderId);

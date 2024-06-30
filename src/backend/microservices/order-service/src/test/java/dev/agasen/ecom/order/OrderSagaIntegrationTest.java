@@ -41,16 +41,10 @@ public class OrderSagaIntegrationTest extends BaseKafkaIntegTest {
     // emit inventory deducted event
     emitEvent(InventoryEvent.Deducted.builder().orderId(orderIdRef).build());
 
-    // orderComponentRepository.findAllByOrderId(orderIdRef)
-    //     .doOnNext(System.out::println)
-    //     .doOnComplete(() -> System.out.println("Completed"))
-    //     .blockLast();
-
-
     // check for order completed event
     this.verifyOrderComplettedEvent(orderIdRef);
 
-
+    verifyOrderComponentsInCompletedState(orderIdRef);
   }
 
 

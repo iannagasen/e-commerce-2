@@ -1,5 +1,7 @@
 package dev.agasen.ecom.inventory.messaging;
 
+import java.time.Instant;
+
 import org.springframework.stereotype.Service;
 
 import dev.agasen.ecom.api.core.inventory.model.InventoryDeductionRequest;
@@ -22,19 +24,18 @@ public class OrderInventoryEventProcessor implements OrderEventProcessor<Invento
 
   @Override
   public Mono<InventoryEvent> handle(Created e) {
-    var req = InventoryDeductionRequest.builder()
-          .orderId(e.orderId())
-          .items(e.items())
-          .customerId(e.customerId())
-          .build();
-
-    return service.deduct(req)
+    return service.deduct(new InventoryDeductionRequest(e.orderId(), e.customerId(), e.items()))
       .doOnNext(r -> log.info("Inventory deducted for Order: {}", r))
-      .map(r -> InventoryEvent.Deducted.builder()
-        .orderId(e.orderId())
-        .customerId(null) // TODO: add customer id
-        .items(e.items())
-        .build());
+      .map(updates -> InventoryEvent.Deducted.builder()
+            .orderId(e.orderId())
+            .customerId(e.customerId())
+            .items(e.items())
+            .createdAt(Instant.now())
+            .build()
+      )
+      .cast(InventoryEvent.class)
+      // handle also duplicate events and return Mono.empty()
+      .onErrorResume(err -> Mono.just(new InventoryEvent.Declined(e.orderId(), Instant.now(), err.getMessage())));
   }
 
   @Override
@@ -43,7 +44,7 @@ public class OrderInventoryEventProcessor implements OrderEventProcessor<Invento
       .doOnNext(r -> log.info("Inventory restored for Order: {}", r))
       .map(r -> InventoryEvent.Restored.builder()
         .orderId(e.orderId())
-        .customerId(null) // TODO: add customer id
+        .customerId(e.customerId())
         .items(e.items())
         .build()
       );
@@ -53,5 +54,4 @@ public class OrderInventoryEventProcessor implements OrderEventProcessor<Invento
   public Mono<InventoryEvent> handle(Completted arg0) {
     return Mono.empty();
   }
-  
 }
