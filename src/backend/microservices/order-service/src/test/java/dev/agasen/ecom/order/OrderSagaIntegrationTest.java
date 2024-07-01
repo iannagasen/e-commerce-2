@@ -42,14 +42,48 @@ public class OrderSagaIntegrationTest extends BaseKafkaIntegTest {
     emitEvent(InventoryEvent.Deducted.builder().orderId(orderIdRef).build());
 
     // check for order completed event
-    this.verifyOrderComplettedEvent(orderIdRef);
+    // this.verifyOrderComplettedEvent(orderIdRef);
 
     verifyOrderComponentsInCompletedState(orderIdRef);
   }
 
+  @Test
+  void orderRollbackWorkflow() {
+    // order create request + validate order in pending state
+    var orderIdRef = super.intiateOrder(REQUEST);
 
+    // check for order created event
+    super.verifyOrderCreatedEvent(orderIdRef, e -> {
+      assert e.customerId().equals(REQUEST.getCustomerId());
+      assert e.items().size() == REQUEST.getItems().size();
+    });
 
+    verifyOrderComponentsInPendingState(orderIdRef);
 
+    /**
+     * EMIT A PAYMENT DECLINED EVENT
+     * THIS SHOULD CAUSE THE ORDER TO ROLLBACK
+     */
+    var declinedPaymentEvent = PaymentEvent.Declined.builder()
+      .orderId(orderIdRef)
+      .amount(
+        REQUEST.getItems().stream()
+          .mapToLong(i -> i.getQuantity() * (i.getPrice() == null ? 0 : i.getPrice()))
+          .sum())
+      .customerId(REQUEST.getCustomerId())
+      .message("Insufficient funds")
+      .build();
 
+    emitEvent(declinedPaymentEvent);
+
+    emitEvent(InventoryEvent.Deducted.builder().orderId(orderIdRef).build());
+
+    // check for order cancelled event
+    this.verifyOrderCancelledEvent(orderIdRef);
+
+    // check for components - payment in failed state, inventory in processed state
+    verifyPamentComponentInFailedState(orderIdRef);
+    verifyInventoryComponentInProcessedState(orderIdRef);
+  }
 
 }

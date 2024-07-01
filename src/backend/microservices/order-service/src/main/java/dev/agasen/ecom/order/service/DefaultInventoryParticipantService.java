@@ -20,12 +20,14 @@ public class DefaultInventoryParticipantService implements InventoryParticipantS
 
   @Override
   public Mono<Void> doOnSuccess(Long orderId) {
-    return doIfNotYetProcessed(orderId, OrderComponentEntity.Inventory::setCompletedAndSuccessful);
+    return doIfNotYetProcessed(orderId, OrderComponentEntity.Inventory::setProcessingSuccess);
   }
 
   @Override
   public Mono<Void> doOnFailure(Long orderId) {
-    return doIfNotYetProcessed(orderId, inv -> inv.setComplettedButUnsuccessful(""));
+    return doIfNotYetProcessed(orderId, inv -> {
+      inv.setProcessingFailed("Inventory participant failed to process");
+    });
   }
 
   @Override
@@ -41,7 +43,6 @@ public class DefaultInventoryParticipantService implements InventoryParticipantS
         // throw exception if empty since, a Pending Inventory component should always be present at initiation of order
         .switchIfEmpty(Mono.error(new IllegalArgumentException("No inventory component found for order: " + orderId)))
         .filter(inv -> inv.getStatus() == ParticipantStatus.PENDING)
-        .cast(OrderComponentEntity.Inventory.class)
         .doOnNext(mapper)
         .flatMap(repository::save)
         .then();

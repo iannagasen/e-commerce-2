@@ -11,9 +11,19 @@ public interface OrderComponentRepository extends ReactiveMongoRepository<OrderC
   Flux<OrderComponentEntity> findAllByOrderId(Long orderId);
 
   @Query("{'orderId': ?0, '_class': 'order_payment'}")
-  Mono<OrderComponentEntity> findOrderPaymentByOrderId(Long orderId);
+  Mono<OrderComponentEntity> findInternalOrderPaymentByOrderId(Long orderId);
 
   @Query("{'orderId': ?0, '_class': 'order_inventory'}")
-  Mono<OrderComponentEntity>  findOrderInventoryByOrderId(Long orderId);
+  Mono<OrderComponentEntity>  findInternalOrderInventoryByOrderId(Long orderId);
+
+  default Mono<OrderComponentEntity.Payment> findOrderPaymentByOrderId(Long orderId) {
+    return findInternalOrderPaymentByOrderId(orderId) .cast(OrderComponentEntity.Payment.class);
+  }
+
+  default Mono<OrderComponentEntity.Inventory> findOrderInventoryByOrderId(Long orderId) {
+    return findInternalOrderInventoryByOrderId(orderId) .cast(OrderComponentEntity.Inventory.class);
+  }
+
+
   
 }

@@ -22,12 +22,14 @@ public class DefaultPaymentParticipantService implements PaymentParticipantServi
 
   @Override
   public Mono<Void> doOnSuccess(Long orderId) {
-    return doIfNotYetProcessed(orderId, Payment::setCompletedAndSuccessful);
+    return doIfNotYetProcessed(orderId, Payment::setProcessingSuccess);
   }
 
   @Override
   public Mono<Void> doOnFailure(Long orderId) {
-    return doIfNotYetProcessed(orderId, pmt -> pmt.setComplettedButUnsuccessful(""));
+    return doIfNotYetProcessed(orderId, pmt -> {
+      pmt.setProcessingFailed("Payment participant failed to process");
+    });
   }
 
   @Override
@@ -41,7 +43,6 @@ public class DefaultPaymentParticipantService implements PaymentParticipantServi
   private Mono<Void> doIfNotYetProcessed(Long orderId, Consumer<OrderComponentEntity.Payment> mapper) {
     return repository.findOrderPaymentByOrderId(orderId)
         .filter(inv -> inv.getStatus() == ParticipantStatus.PENDING)
-        .cast(OrderComponentEntity.Payment.class)
         .doOnNext(inv -> log.info("Processing inventory component: {}", inv))
         .doOnNext(mapper)
         .flatMap(repository::save)

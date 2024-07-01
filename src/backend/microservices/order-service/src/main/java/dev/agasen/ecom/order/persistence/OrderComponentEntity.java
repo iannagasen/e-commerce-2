@@ -37,14 +37,25 @@ public abstract class OrderComponentEntity {
   public abstract ParticipantStatus getStatus();
   public abstract void setStatus(ParticipantStatus status);
 
-  public void setCompletedAndSuccessful() {
-    log.info("setCompletedAndSuccessful called");
+  public boolean isSuccessfulAndProcessed() {
+    return this.isSuccessful() && this.getStatus() == ParticipantStatus.PROCESSED;
+  }
+
+  public OrderComponentEntity setComplete() {
+    log.info("setCompleted called");
     this.setStatus(ParticipantStatus.COMPLETED);
+    return this;
+  }
+
+  public void setProcessingSuccess() {
+    log.info("setCompletedAndSuccessful called");
+    this.setStatus(ParticipantStatus.PROCESSED);
     this.setSuccessful(true);
   }
 
-  public void setComplettedButUnsuccessful(String message) {
-    this.setStatus(ParticipantStatus.COMPLETED);
+  public void setProcessingFailed(String message) {
+    log.info("setProcessingFailed called");
+    this.setStatus(ParticipantStatus.FAILED);
     this.setSuccessful(false);
     this.setMessage(message);
   }

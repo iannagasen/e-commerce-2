@@ -46,7 +46,7 @@ public class OrderPaymentEventProcessor implements OrderEventProcessor<PaymentEv
   @Override
   public Mono<PaymentEvent> handle(Cancelled event) {
     return service.refundPayment(event.orderId())
-      .doOnNext(payment -> log.info("Payment cancelled for Order: ", payment.getOrderId()))
+      .doOnNext(payment -> log.info("Order cancelled for Order: {}, will be refunding Payment", payment.getOrderId()))
       .map(payment -> PaymentEvent.Declined.builder()
         .orderId(payment.getOrderId())
         .customerId(payment.getCustomerId())

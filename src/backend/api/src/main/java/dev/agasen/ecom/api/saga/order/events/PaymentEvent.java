@@ -17,15 +17,6 @@ public sealed interface PaymentEvent extends DomainEvent, OrderSaga permits Paym
   ) implements PaymentEvent {}
 
   @Builder
-  record Refunded(
-      Long orderId,
-      Instant createdAt,
-      Long amountRefunded,
-      Long customerId,
-      String message
-  ) implements PaymentEvent {}
-
-  @Builder
   record Declined(
       Long orderId,
       Instant createdAt,
@@ -33,5 +24,16 @@ public sealed interface PaymentEvent extends DomainEvent, OrderSaga permits Paym
       Long customerId,
       String message
   ) implements PaymentEvent {}
+
+  @Builder
+  record Refunded(
+    // Rollback event
+      Long orderId,
+      Instant createdAt,
+      Long amountRefunded,
+      Long customerId,
+      String message
+  ) implements PaymentEvent {}
+
 
 }

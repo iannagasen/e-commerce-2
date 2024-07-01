@@ -7,4 +7,5 @@ TODO:
   - [ ] Add Product Service
     - consider using Redis since data on this service may be frequently retrieved
   - [ ] Finish Workflow + complete test
+  - [ ] Fix failing OrderSagaIntegrationTest 
   - [ ] add here

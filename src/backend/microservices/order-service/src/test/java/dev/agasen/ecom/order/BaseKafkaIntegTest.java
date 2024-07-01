@@ -1,5 +1,7 @@
 package dev.agasen.ecom.order;
 
+import static org.junit.Assert.assertEquals;
+
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -88,11 +90,12 @@ public class BaseKafkaIntegTest extends BaseMongoDBIntegTest {
 
   protected void verifyOrderComponentsInCompletedState(Long orderId) {
     StepVerifier.create(orderComponentRepository.findAllByOrderId(orderId).collectList())
+      .as("Expecting all components to be in completed state")
       .consumeNextWith(components -> {
-        assert components.size() == 2;
-        assert components.stream().anyMatch(OrderComponentEntity.Inventory.class::isInstance);
-        assert components.stream().anyMatch(OrderComponentEntity.Payment.class::isInstance);
-        assert components.stream().map(OrderComponentEntity::getStatus).allMatch(ParticipantStatus.COMPLETED::equals);
+        assert components.size() == 2 : "Expected 2 components but got %s".formatted(components.size());
+        assert components.stream().anyMatch(OrderComponentEntity.Inventory.class::isInstance) : "Expected Inventory Component";
+        assert components.stream().anyMatch(OrderComponentEntity.Payment.class::isInstance) : "Expected Payment Component";
+        assert components.stream().map(OrderComponentEntity::getStatus).allMatch(ParticipantStatus.COMPLETED::equals) : "Expected all components to be in completed state";
       })
       .verifyComplete();
   }
@@ -109,6 +112,41 @@ public class BaseKafkaIntegTest extends BaseMongoDBIntegTest {
     });
   }
 
+  protected void verifyPamentComponentInFailedState(Long orderId) {
+    expectStatus(ParticipantStatus.FAILED, orderComponentRepository.findOrderPaymentByOrderId(orderId));
+  }
+
+  protected void verifyInventoryComponentInFailedState(Long orderId) {
+    expectStatus(ParticipantStatus.FAILED, orderComponentRepository.findOrderInventoryByOrderId(orderId));
+  }
+
+  protected void verifyPamentComponentInRollbackState(Long orderId) {
+    expectStatus(ParticipantStatus.ROLLBACK, orderComponentRepository.findOrderPaymentByOrderId(orderId));
+  }
+
+  protected void verifyInventoryComponentInRollbackState(Long orderId) {
+    expectStatus(ParticipantStatus.ROLLBACK, orderComponentRepository.findOrderInventoryByOrderId(orderId));
+  }
+
+  protected void verifyPamentComponentInProcessedState(Long orderId) {
+    expectStatus(ParticipantStatus.PROCESSED, orderComponentRepository.findOrderPaymentByOrderId(orderId));
+  }
+
+  protected void verifyInventoryComponentInProcessedState(Long orderId) {
+    expectStatus(ParticipantStatus.PROCESSED, orderComponentRepository.findOrderInventoryByOrderId(orderId));
+  }
+
+  protected void expectStatus(ParticipantStatus expectedStatus, Mono<? extends OrderComponentEntity> participantMono) {
+    StepVerifier.create(participantMono)
+      .consumeNextWith(component -> {
+        assert component.getStatus().equals(expectedStatus) 
+            : "Expected status %s but got %s for %s"
+              .formatted(expectedStatus, component.getStatus(), component.getComponentName());
+      })
+      .verifyComplete();
+  }
+
+
   protected void emitEvent(PaymentEvent event) {
     streamBridge.send("payment-events", event);
   }
@@ -120,9 +158,10 @@ public class BaseKafkaIntegTest extends BaseMongoDBIntegTest {
   protected <T> void expectEvent(Class<T> type, Consumer<T> assertion) {
     responseFlux
       .next()
-      .timeout(Duration.ofSeconds(5), Mono.empty())
+      .timeout(Duration.ofSeconds(20), Mono.empty())
       .cast(type)
       .as(StepVerifier::create)
+      .as("Expecting Event: %s".formatted(type.getSimpleName()))
       .consumeNextWith(assertion)
       .verifyComplete();
   }

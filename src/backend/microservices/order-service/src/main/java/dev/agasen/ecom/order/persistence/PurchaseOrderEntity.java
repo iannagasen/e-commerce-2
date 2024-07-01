@@ -55,4 +55,9 @@ public class PurchaseOrderEntity {
       .orderStatus(orderStatus)
       .build();
   }
+
+  public PurchaseOrderEntity setOrderStatus(OrderStatus status) {
+    this.orderStatus = status;
+    return this;
+  }
 }
