@@ -1,13 +1,10 @@
 package dev.agasen.ecom.order.service;
 
-import java.util.List;
-import java.util.function.Predicate;
-
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import dev.agasen.ecom.api.saga.order.status.OrderStatus;
-import dev.agasen.ecom.api.saga.order.status.ParticipantStatus;
 import dev.agasen.ecom.order.messaging.service.OrderFulfillmentService;
 import dev.agasen.ecom.order.persistence.OrderComponentEntity;
 import dev.agasen.ecom.order.persistence.OrderComponentRepository;
@@ -27,6 +24,7 @@ public class DefaultOrderFulfillmentService implements OrderFulfillmentService {
   private final PurchaseOrderRepository purchaseOrderRepository;
 
   @Override
+  @Transactional
   public Mono<PurchaseOrderEntity> complete(Long orderId) {
     return repo.findAllByOrderId(orderId).collectList()
         // check if all components are successful
@@ -50,6 +48,7 @@ public class DefaultOrderFulfillmentService implements OrderFulfillmentService {
   }
 
   @Override
+  @Transactional
   public Mono<PurchaseOrderEntity> cancel(Long orderId) {
     return purchaseOrderRepository.findByOrderId(orderId)
         .filter(order -> order.getOrderStatus() == OrderStatus.PENDING)

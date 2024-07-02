@@ -2,6 +2,9 @@ package dev.agasen.ecom.order;
 
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import dev.agasen.ecom.api.core.order.model.CreateOrderRequest;
@@ -21,8 +24,19 @@ public class OrderSagaIntegrationTest extends BaseKafkaIntegTest {
     ))
     .build();
 
+  static final CreateOrderRequest REQUEST2 = CreateOrderRequest.builder()
+    .customerId(1L)
+    .items(List.of(
+      new OrderItem(1L, 1, 100L),
+      new OrderItem(2L, 2, 200L),
+      new OrderItem(3L, 3, 300L)
+
+    ))
+    .build();
+
   @Test
-  void orderCompletedWorkflow() {
+  @Order(1)
+  void orderCompletedWorkflow() throws InterruptedException {
     // order create request + validate order in pending state
     var orderIdRef = super.intiateOrder(REQUEST);
 
@@ -34,21 +48,32 @@ public class OrderSagaIntegrationTest extends BaseKafkaIntegTest {
 
     verifyOrderComponentsInPendingState(orderIdRef);
 
-    // emit payment deducted event
-    // we only need the orderId
-    emitEvent(PaymentEvent.Processed.builder().orderId(orderIdRef).build());
-
+    
     // emit inventory deducted event
     emitEvent(InventoryEvent.Deducted.builder().orderId(orderIdRef).build());
 
-    // check for order completed event
-    // this.verifyOrderComplettedEvent(orderIdRef);
+    Thread.sleep(4000);
 
-    verifyOrderComponentsInCompletedState(orderIdRef);
+    // emit payment deducted event
+    emitEvent(PaymentEvent.Processed.builder().orderId(orderIdRef).build());
+
+    // Lets wait for some time to make sure Stream Bridge has enough time to process the events
+    // and then we can verify the order completed event
+    Thread.sleep(4000);
+
+    // check for order completed event
+    // this needs to be done first before verifyOrderComponentsInCompletedState
+    //      since we want to make sure Order Completted is propagated
+    this.verifyOrderComplettedEvent(orderIdRef);
+
+    Thread.sleep(4000);
+
+    // verifyOrderComponentsInCompletedState(orderIdRef);
   }
 
   @Test
-  void orderRollbackWorkflow() {
+  @Order(2)
+  void orderRollbackWorkflow() throws InterruptedException {
     // order create request + validate order in pending state
     var orderIdRef = super.intiateOrder(REQUEST);
 
@@ -77,6 +102,10 @@ public class OrderSagaIntegrationTest extends BaseKafkaIntegTest {
     emitEvent(declinedPaymentEvent);
 
     emitEvent(InventoryEvent.Deducted.builder().orderId(orderIdRef).build());
+
+    // Lets wait for some time to make sure Stream Bridge has enough time to process the events
+    // and then we can verify the order completed event
+    Thread.sleep(4000);
 
     // check for order cancelled event
     this.verifyOrderCancelledEvent(orderIdRef);

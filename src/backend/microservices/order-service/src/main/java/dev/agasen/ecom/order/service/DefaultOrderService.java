@@ -1,6 +1,7 @@
 package dev.agasen.ecom.order.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import dev.agasen.ecom.api.core.order.model.CreateOrderRequest;
 import dev.agasen.ecom.api.saga.order.events.listener.OrderEventListener;
@@ -25,6 +26,7 @@ public class DefaultOrderService implements OrderService {
   private final OrderEventListener orderEventListener;
 
   @Override
+  @Transactional
   public Mono<PurchaseOrderEntity> placeOrder(CreateOrderRequest req) {
     return sequenceGenerator.generateSequence(PurchaseOrderEntity.SEQUENCE_NAME)
       .map(orderId -> PurchaseOrderEntity.fromPending(orderId, req.getCustomerId(), req.getItems()))

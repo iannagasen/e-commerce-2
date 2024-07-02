@@ -23,6 +23,7 @@ import dev.agasen.ecom.api.saga.order.events.PaymentEvent;
 import dev.agasen.ecom.api.saga.order.status.ParticipantStatus;
 import dev.agasen.ecom.order.persistence.OrderComponentEntity;
 import dev.agasen.ecom.order.persistence.OrderComponentRepository;
+import dev.agasen.ecom.order.persistence.PurchaseOrderRepository;
 import dev.agasen.ecom.order.persistence.OrderComponentEntity.Payment;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -55,6 +56,7 @@ public class BaseKafkaIntegTest extends BaseMongoDBIntegTest {
   @Autowired StreamBridge streamBridge;
 
   @Autowired OrderComponentRepository orderComponentRepository;
+  @Autowired PurchaseOrderRepository purchaseOrderRepository;
 
   // what we are consuming
   static final Sinks.Many<OrderEvent> responseSink = Sinks.many().unicast().onBackpressureBuffer();
@@ -95,7 +97,10 @@ public class BaseKafkaIntegTest extends BaseMongoDBIntegTest {
         assert components.size() == 2 : "Expected 2 components but got %s".formatted(components.size());
         assert components.stream().anyMatch(OrderComponentEntity.Inventory.class::isInstance) : "Expected Inventory Component";
         assert components.stream().anyMatch(OrderComponentEntity.Payment.class::isInstance) : "Expected Payment Component";
-        assert components.stream().map(OrderComponentEntity::getStatus).allMatch(ParticipantStatus.COMPLETED::equals) : "Expected all components to be in completed state";
+        assert components.stream().map(OrderComponentEntity::getStatus).allMatch(ParticipantStatus.COMPLETED::equals) 
+          : "Expected all components to be in completed state, but got %s: %s, %s: %s"
+            .formatted(components.get(0).getComponentName(), components.get(0).getStatus(),
+                        components.get(1).getComponentName(), components.get(1).getStatus());
       })
       .verifyComplete();
   }
