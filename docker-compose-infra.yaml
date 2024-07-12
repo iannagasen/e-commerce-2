@@ -1,19 +1,6 @@
-version: '3.0'
+version: "3.0"
 
 services:
-  inventory:
-    build: src/backend/microservices/inventory-service
-    mem_limit: 512m
-    ports:
-      - 8080:8080
-    # depends_on:
-    #   mongodb:
-    #     condition: service_healthy
-    #   kafka:
-    #     condition: service_healthy
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-
   mongodb: 
     image: mongo:6.0.4
     mem_limit: 512m
@@ -40,7 +27,7 @@ services:
       ## kafka server
       - KAFKA_CFG_PROCESS_ROLES=broker,controller
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:2181,EXTERNAL://:9094 
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:2181,EXTERNAL://:9094,PLAINTEXT://kafka:9092
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
       - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094
         
@@ -63,4 +50,4 @@ services:
 
 volumes:
   kafka-data:
-    driver: local
+    driver: local   
