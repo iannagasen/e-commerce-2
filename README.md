@@ -15,14 +15,15 @@
 
 #### DevOps
   - **Containerization: Docker**
-  - **Container Orchestration: Docker Compose** **Will be upgrading to Kubernetes*
+  - **Container Orchestration: Kubernetes**
+    - Using Kind as the Cluster, Nginx Ingress as the Ingress Controller
   - **CI/CD: GitHub Actions**
+    - test | build | push latest images to Dockerhub
 
 #### FrontEnd
   - **TypeScript**
   - **Angular**
   - **RxJS**
-
 
 #### System Design Patterns
   - **Reactive**
