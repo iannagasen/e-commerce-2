@@ -44,5 +44,5 @@ jobs:
         run: |
           cd src/backend/microservices/inventory-service
           docker login -u ${{ SECRETS.DOCKER_USERNAME }} -p ${{ SECRETS.DOCKER_PASSWORD }}
-          docker build -t latest .
+          docker build -t ${{ SECRETS.DOCKER_USERNAME }}/e-commerce-app-inventory-service .
           docker push ${{ SECRETS.DOCKER_USERNAME }}/e-commerce-app-inventory-service
