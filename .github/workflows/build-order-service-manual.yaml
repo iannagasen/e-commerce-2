@@ -5,14 +5,14 @@
 # This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
 
-name: Inventory Service Manual Trigger
+name: Order Service Manual Trigger
 
 on:
   workflow_dispatch:
 
 jobs:
-  build-inventory-service:
-    name: Build Inventory Service Manual Trigger
+  build-order-service:
+    name: Build Order Service Manual Trigger
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -33,13 +33,13 @@ jobs:
       - name: Build with Gradle Wrapper
         # lets skip test for now
         # TODO: make those tests work!!!
-        run: ./gradlew :src:backend:microservices:inventory-service:build -x test
+        run: ./gradlew :src:backend:microservices:order-service:build -x test
 
       # run only on main branch
       - if: github.ref == 'refs/heads/main'
         name: Build and publish Docker image
         run: |
-          cd src/backend/microservices/inventory-service
+          cd src/backend/microservices/order-service
           docker login -u ${{ SECRETS.DOCKER_USERNAME }} -p ${{ SECRETS.DOCKER_PASSWORD }}
-          docker build -t ${{ SECRETS.DOCKER_USERNAME }}/e-commerce-app-inventory-service .
-          docker push ${{ SECRETS.DOCKER_USERNAME }}/e-commerce-app-inventory-service
+          docker build -t ${{ SECRETS.DOCKER_USERNAME }}/e-commerce-app-order-service .
+          docker push ${{ SECRETS.DOCKER_USERNAME }}/e-commerce-app-order-service
