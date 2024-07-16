@@ -56,5 +56,6 @@ public abstract class BaseIntegrationTest extends MongoDBTestBase {
     public Consumer<Flux<InventoryEvent>> inventoryEventConsumer(){
       return f -> f.doOnNext(responseSink::tryEmitNext).subscribe();
     }
+    
   }
 }
