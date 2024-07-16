@@ -42,6 +42,7 @@ jobs:
       - if: github.ref == 'refs/heads/main'
         name: Build and publish Docker image
         run: |
-          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t src/backend/microservices/inventory-service .
-          docker push ${{ secrets.DOCKER_USERNAME }}/e-commerce-app-inventory-service
+          cd src/backend/microservices/inventory-service
+          docker login -u ${{ SECRETS.DOCKER_USERNAME }} -p ${{ SECRETS.DOCKER_PASSWORD }}
+          docker build .
+          docker push ${{ SECRETS.DOCKER_USERNAME }}/e-commerce-app-inventory-service

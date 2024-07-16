@@ -42,6 +42,7 @@ jobs:
       - if: github.ref == 'refs/heads/main'
         name: Build and publish Docker image
         run: |
+          cd src/backend/microservices/order-service
           docker login -u ${{ SECRETS.DOCKER_USERNAME }} -p ${{ SECRETS.DOCKER_PASSWORD }}
-          docker build -t src/backend/microservices/order-service .
+          docker build .
           docker push ${{ SECRETS.DOCKER_USERNAME }}/e-commerce-app-order-service
