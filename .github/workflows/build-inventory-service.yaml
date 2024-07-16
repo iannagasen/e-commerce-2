@@ -36,7 +36,7 @@ jobs:
       - name: Build with Gradle Wrapper
         # lets skip test for now
         # TODO: make those tests work!!!
-        run: ./gradlew build -x test
+        run: ./gradlew :src:backend:microservices:inventory-service:build -x test
 
       # run only on main branch
       - if: github.ref == 'refs/heads/main'
@@ -44,5 +44,5 @@ jobs:
         run: |
           cd src/backend/microservices/inventory-service
           docker login -u ${{ SECRETS.DOCKER_USERNAME }} -p ${{ SECRETS.DOCKER_PASSWORD }}
-          docker build .
+          docker build -t latest .
           docker push ${{ SECRETS.DOCKER_USERNAME }}/e-commerce-app-inventory-service
