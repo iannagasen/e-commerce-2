@@ -8,6 +8,8 @@ spring.data.mongodb:
   host: localhost
   port: 27018
   database: inventory-db
+  username: admin
+  password: password
 
 
 spring.cloud:

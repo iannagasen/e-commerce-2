@@ -8,6 +8,8 @@ spring.data.mongodb:
   host: localhost
   port: 27018
   database: payment-db
+  username: admin
+  password: password
 
 
 spring.cloud:
