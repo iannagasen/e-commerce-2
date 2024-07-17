@@ -19,6 +19,7 @@ spring.data.mongodb:
   database: order-db
   username: admin
   password: password
+  authentication-database: admin
 
 spring.cloud.function:
   definition: orderEventProducer;paymentProcessor;inventoryProcessor

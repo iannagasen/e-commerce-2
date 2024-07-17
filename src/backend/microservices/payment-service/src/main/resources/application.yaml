@@ -10,6 +10,7 @@ spring.data.mongodb:
   database: payment-db
   username: admin
   password: password
+  authentication-database: admin
 
 
 spring.cloud:
