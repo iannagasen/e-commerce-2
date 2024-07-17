@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb-deployment
+spec:
+  selector:
+    matchLabels:
+      app: mongodb
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - name: mongodb
+        image: mongo:6.0.4
+        envFrom:
+        - configMapRef:
+            name: app-config
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - name: mongo-data-volume
+          mountPath: /docker-entrypoint-initdb.d
+      volumes:
+      - name: mongo-data-volume
+        configMap:
+          name: mongo-init
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  # name: mongodb-service
+  # this should be name mongodb not mongodb-service 
+  # since this is the host name in the application.yaml 
+  # in app for docker profile
+  name: mongodb 
+spec:
+  selector:
+    app: mongodb
+  ports:
+  - port: 27017
+    targetPort: 27017

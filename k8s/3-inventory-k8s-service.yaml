@@ -3,12 +3,14 @@ kind: Service
 metadata:
   name: inventory-service
 spec:
-  type: ClusterIP
+  # type: ClusterIP
+  type: NodePort # expose the service to the outside world - for testing only
   selector:
     app: inventory-service-app
   ports:
-  - port: 8001
-    targetPort: 8080
+  - port: 8001 #ClusterIP
+    targetPort: 8080 #Pod Port
+    nodePort: 30001 #ExternalIP - receive traffic from outside
 
 ---
 apiVersion: apps/v1
@@ -27,6 +29,10 @@ spec:
     spec:
       containers:
       - name: inventory-service
-        image: ianneilagasen/e-commerce-app-inventory-service
+        image: ianneilagasen/e-commerce-app-inventory-service:latest
         ports:
         - containerPort: 8080
+        imagePullPolicy: Always
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: docker    

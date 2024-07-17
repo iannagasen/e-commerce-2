@@ -1,0 +1,18 @@
+# apiVersion: v1
+# kind: Pod
+# metadata:
+#   name: inventory-service-pod
+# spec:
+#   containers:
+#   - name: inventory-service
+#     image: ianneilagasen/e-commerce-app-inventory-service:latest
+#     ports:
+#     - name: "web-port"
+#       ## what you like to export
+#       containerPort: 8080
+#       ## default: TCP, POSSIBLE: UDP, SCTP
+#       protocol: TCP
+#     env:
+#     - name: SPRING_PROFILES_ACTIVE
+#       value: docker
+#     imagePullPolicy: Always
