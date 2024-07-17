@@ -11,6 +11,8 @@ on:
   push:
     paths:
       - 'src/backend/microservices/payment-service/**'
+      - 'src/backend/api/**'
+      - 'src/backend/util/**'
     branches: [ "**" ]
 
 jobs:

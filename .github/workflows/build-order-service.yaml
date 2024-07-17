@@ -11,6 +11,8 @@ on:
   push:
     paths:
       - 'src/backend/microservices/order-service/**'
+      - 'src/backend/api/**'
+      - 'src/backend/util/**'
     branches: [ "**" ]
 
 jobs:
