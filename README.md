@@ -9,7 +9,7 @@
 #### Infrastructure
   - **Database: MongoDB** - w/ Spring Data MongoDB
   - **Message Broker: Kafka**
-  - **Reverse Proxy and Gateway: Nginx and Netflix Eureka**
+  - **Reverse Proxy and Gateway: Nginx and ~~Netflix Eureka~~ Kubernetes Service + Nginx Ingress
   - **Authentication Server: Spring OAuth2 and Spring Security** **Not yet implemented*
   - **Monitoring and Logging** **Not yet implemented*
 
