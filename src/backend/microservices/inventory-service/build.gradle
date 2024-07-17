@@ -47,7 +47,7 @@ dependencies {
 	testImplementation 'org.testcontainers:junit-jupiter'
 	testImplementation 'org.testcontainers:mongodb'
 
-	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+	// implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 }
 
 dependencyManagement {

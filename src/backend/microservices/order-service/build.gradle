@@ -49,7 +49,7 @@ dependencies {
 	testImplementation 'org.testcontainers:mongodb'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+	// implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 }
 
 dependencyManagement {
