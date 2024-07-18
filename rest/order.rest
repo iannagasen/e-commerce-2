@@ -39,3 +39,7 @@ Content-Type: application/json
 
 ### GET INVENTORY DETAILS
 GET {{BASE}}/order/inventory/1
+
+
+### GET ALL ORDERS
+GET {{BASE}}/orders

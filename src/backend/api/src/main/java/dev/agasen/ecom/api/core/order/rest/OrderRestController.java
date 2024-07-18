@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import dev.agasen.ecom.api.core.inventory.model.Inventory;
 import dev.agasen.ecom.api.core.order.model.CreateOrderRequest;
+import dev.agasen.ecom.api.core.order.model.OrderDetails;
 import dev.agasen.ecom.api.core.order.model.PurchaseOrder;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface OrderRestController {
@@ -17,5 +19,8 @@ public interface OrderRestController {
 
   @GetMapping("/order/inventory/{productId}")
   Mono<Inventory> getOrderInventory(@PathVariable(value = "productId") Long productId);
+
+  @GetMapping("/orders")
+  Flux<OrderDetails> getOrders();
 
 }

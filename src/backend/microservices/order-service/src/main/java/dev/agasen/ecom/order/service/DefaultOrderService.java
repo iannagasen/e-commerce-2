@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import dev.agasen.ecom.api.core.order.model.CreateOrderRequest;
+import dev.agasen.ecom.api.core.order.model.OrderDetails;
+import dev.agasen.ecom.api.core.order.model.OrderItem;
 import dev.agasen.ecom.api.saga.order.events.listener.OrderEventListener;
 import dev.agasen.ecom.order.OrderService;
 import dev.agasen.ecom.order.persistence.OrderComponentEntity;
@@ -13,6 +15,7 @@ import dev.agasen.ecom.order.persistence.PurchaseOrderRepository;
 import dev.agasen.ecom.util.mongo.SequenceGeneratorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -44,6 +47,18 @@ public class DefaultOrderService implements OrderService {
       .doOnNext(po -> orderEventListener.emitOrderCreatedEvent(po.toRestModel()))
       .doOnSuccess(order -> log.info("Order placed: {}", order))
       ;
+  }
+
+  @Override
+  public Flux<OrderDetails> getOrders() {
+    return purchaseOrderRepo.findAll()
+      .map(PurchaseOrderEntity::toRestModel)
+      .map(order -> OrderDetails.builder()
+        // .order(order)
+        .purchaseOrder(order)
+        .totalPayment(order.getItems().stream().mapToLong(OrderItem::getPrice).sum())
+        .build()
+      );
   }
   
 }
