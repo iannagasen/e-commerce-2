@@ -65,6 +65,14 @@ spring.cloud.stream:
         "key.serializer": org.apache.kafka.common.serialization.StringSerializer
 
 
+springdoc:
+  swagger-ui.path: /openapi/swagger-ui.html
+  api-docs.path: /openapi/v3/api-docs
+  packagesToScan: dev.agasen
+  pathsToMatch: /**
+  cache.disabled: true
+
+
 # app.eureka-server: localhost
 
 # eureka:
