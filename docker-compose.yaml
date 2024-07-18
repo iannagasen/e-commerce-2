@@ -27,6 +27,10 @@ services:
       retries: 60
     volumes:
       - ./mongodb/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      
 
   kafka:
     image: bitnami/kafka:3.3.2

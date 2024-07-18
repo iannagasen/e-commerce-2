@@ -39,12 +39,16 @@
       "projectName": "discovery-server",
       "args": "",
       "envFile": "${workspaceFolder}/.env"
-    }
+    },
   ],
   "compounds": [
     {
       "name": "OrderMicorservice",
-      "configurations": ["EurekaDiscoveryServer", "OrderService", "PaymentService", "InventoryService"],
+      "configurations": [
+        // "EurekaDiscoveryServer", 
+        "OrderService", 
+        "PaymentService", 
+        "InventoryService"],
       // "preLaunchTask": "${defaultBuildTask}",
       "stopAll": true
     }
