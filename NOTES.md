@@ -189,3 +189,12 @@ Cluster ID Configuration:
 Network Policies and DNS:
 
 4. Check if the Kafka broker can resolve its own service name (kafka) and reach it correctly.
+
+
+### DEPENDENCIES
+```bash
+https://www.npmjs.com/package/ng-openapi-gen
+## install globally
+npm install -g ng-openapi-gen
+ng-openapi-gen --input my-api.yaml --output my-app/src/app/api
+```

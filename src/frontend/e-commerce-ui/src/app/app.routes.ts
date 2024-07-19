@@ -1,5 +1,5 @@
 import { Routes } from "@angular/router";
-import { AllOrdersComponent } from "./all-orders/all-orders.component";
+import { AllOrdersComponent } from "./views/all-orders/all-orders.component";
 
 export const routes: Routes = [
   {
