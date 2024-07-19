@@ -50,15 +50,8 @@ public class DefaultOrderService implements OrderService {
   }
 
   @Override
-  public Flux<OrderDetails> getOrders() {
-    return purchaseOrderRepo.findAll()
-      .map(PurchaseOrderEntity::toRestModel)
-      .map(order -> OrderDetails.builder()
-        // .order(order)
-        .purchaseOrder(order)
-        .totalPayment(order.getItems().stream().mapToLong(OrderItem::getPrice).sum())
-        .build()
-      );
+  public Flux<PurchaseOrderEntity> getOrders() {
+    return purchaseOrderRepo.findAll();
   }
   
 }

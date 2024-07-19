@@ -1,5 +1,7 @@
 package dev.agasen.ecom.order.rest;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.RestController;
 
 import dev.agasen.ecom.api.core.inventory.model.Inventory;
@@ -34,8 +36,10 @@ public class OrderController implements OrderRestController {
   }
 
   @Override
-  public Flux<OrderDetails> getOrders() {
-    return orderService.getOrders();
+  public Mono<List<PurchaseOrder>> getOrders() {
+    return orderService.getOrders()
+    .map(PurchaseOrderEntity::toRestModel)
+    .collectList();
   }
 
 }

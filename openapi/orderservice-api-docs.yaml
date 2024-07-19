@@ -69,7 +69,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/OrderDetails'
+                  $ref: '#/components/schemas/PurchaseOrder'
   /order/inventory/{productId}:
     get:
       tags:
@@ -153,18 +153,6 @@ components:
           - PENDING
           - COMPLETED
           - CANCELLED
-    OrderDetails:
-      type: object
-      properties:
-        purchaseOrder:
-          $ref: '#/components/schemas/PurchaseOrder'
-        orderItems:
-          type: array
-          items:
-            $ref: '#/components/schemas/OrderItem'
-        totalPayment:
-          type: integer
-          format: int64
     Inventory:
       type: object
       properties:

@@ -10,6 +10,6 @@ public interface OrderService {
 
   Mono<PurchaseOrderEntity> placeOrder(CreateOrderRequest req);
 
-  Flux<OrderDetails> getOrders();
+  Flux<PurchaseOrderEntity> getOrders();
   
 }
