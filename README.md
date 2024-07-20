@@ -29,5 +29,3 @@
   - **Reactive**
   - **Event Driven**
   - **Choreography - Saga**
-
-

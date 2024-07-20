@@ -28,7 +28,6 @@ export class AllOrdersComponent {
   ) { }
 
   ngOnInit(): void {
-    // this.allOrders$ = this._httpClient.get<Array<PurchaseOrder>>('http://localhost:8103/orders');
     this.allOrders$ = this._orderControllerService.getOrders();
   }
 

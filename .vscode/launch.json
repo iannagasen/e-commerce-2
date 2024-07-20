@@ -40,6 +40,16 @@
       "args": "",
       "envFile": "${workspaceFolder}/.env"
     },
+    {
+      "type": "java",
+      "name": "AuthServer",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "dev.agasen.auth_server.AuthServerApplication",
+      "projectName": "auth-server",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    },
   ],
   "compounds": [
     {
