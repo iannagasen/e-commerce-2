@@ -117,6 +117,7 @@ public class SecurityConfig {
         AuthorizationGrantType.AUTHORIZATION_CODE
       )
       .redirectUri("https://www.manning.com/authorized")      // list of uri where the as will redirect the user with the auth code
+      .redirectUri("my.redirect.uri")
       .scope(OidcScopes.OPENID)                               // defines the purpose for the request of an access token
       .build();
 
