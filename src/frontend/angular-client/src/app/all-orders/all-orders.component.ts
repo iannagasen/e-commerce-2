@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
-import { OrderControllerService } from '../api/orderservice/services';
 import { CommonModule } from '@angular/common';
+import { OrderControllerService } from '../api/orderservice/services';
 import { PurchaseOrder } from '../api/orderservice/models';
-import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-all-orders',
@@ -21,11 +20,11 @@ import { HttpClient } from '@angular/common/http';
   `
 })
 export class AllOrdersComponent {
+  
   allOrders$!: Observable<Array<PurchaseOrder>>;
 
   constructor(
-    private _orderControllerService: OrderControllerService,
-    private _httpClient: HttpClient
+    private _orderControllerService: OrderControllerService
   ) { }
 
   ngOnInit(): void {

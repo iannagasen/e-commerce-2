@@ -16,13 +16,13 @@ import reactor.core.publisher.Mono;
 
 public interface OrderRestController {
 
-  @PostMapping("/order")
+  @PostMapping(value = "/order", produces = "application/json")
   Mono<PurchaseOrder> placeOrder(@RequestBody Mono<CreateOrderRequest> req);
 
-  @GetMapping("/order/inventory/{productId}")
+  @GetMapping(value = "/order/inventory/{productId}", produces = "application/json")
   Mono<Inventory> getOrderInventory(@PathVariable(value = "productId") Long productId);
 
-  @GetMapping("/orders")
+  @GetMapping(value = "/orders", produces = "application/json")
   Mono<List<PurchaseOrder>> getOrders();
 
 }

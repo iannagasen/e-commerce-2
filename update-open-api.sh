@@ -20,3 +20,5 @@ sleep 5
 kill $BOOT_RUN_PID
 
 find ./openapi/orderservice-api-docs.yaml -type f -exec sed -i 's/localhost:6666/localhost:8103/g' {} \;
+
+### TODO: Consider replacing content: */* with application/json as the ng openapi generator does not support */*

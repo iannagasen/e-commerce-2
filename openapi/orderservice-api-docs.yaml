@@ -27,7 +27,7 @@ paths:
         "200":
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/PurchaseOrder'
   /test:
@@ -65,7 +65,7 @@ paths:
         "200":
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
                 type: array
                 items:
@@ -92,7 +92,7 @@ paths:
         "200":
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/Inventory'
 components:
@@ -107,11 +107,11 @@ components:
           type: string
         message:
           type: string
-        error:
-          type: string
         status:
           type: integer
           format: int32
+        error:
+          type: string
     CreateOrderRequest:
       type: object
       properties:
