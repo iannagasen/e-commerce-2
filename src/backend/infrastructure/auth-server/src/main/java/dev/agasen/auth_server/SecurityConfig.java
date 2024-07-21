@@ -180,6 +180,20 @@ public class SecurityConfig {
     /**
      * JWKSource is the object providing key management for Spring Security AuthorizationServer
      * NOTE: !!!! IRL, the app would read read the keys from a location where theyre safle stored (such as vault)
+     * 
+     * "jwks_uri": "http://localhost:8080/oauth2/jwks", <-- KeySet endpoint
+     *    - provieds the public keys for the auth server
+     * Sample output:
+     *  "keys": [
+     *   {
+     *    "kty": "RSA",
+     *    "e": "AQAB",
+     *    "kid": "b1e7b4b7-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
+     *    "alg": "RS256",
+     *    "n": "rEWxMab_kgBv-ardz7qivEtpvKuG......"
+     *   }
+     * ]
+     * 
      */
     
     KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
