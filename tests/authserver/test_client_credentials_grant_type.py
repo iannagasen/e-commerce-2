@@ -15,6 +15,7 @@ client_creds_grant_type = ClientCredentialsGrantType(
 )
 
 client_creds_grant_type.get_access_token()
+client_creds_grant_type.introspect_token()
 
 
 ##### TESTING USING OPAQUE TOKENS #####
@@ -31,5 +32,6 @@ client_creds_grant_type_opaque = ClientCredentialsGrantType(
 )
 
 client_creds_grant_type_opaque.get_access_token()
+client_creds_grant_type_opaque.introspect_token()
 
 print("Comparing the 2 access tokens, the opaque token is much shorter than the non-opaque(JWT) token.")

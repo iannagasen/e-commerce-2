@@ -16,16 +16,27 @@ class ClientCredentialsGrantType:
 
     self._access_token = None
     self._session = requests.Session()
+    self._http_basic_auth = base64.b64encode(f"{self.client_id}:{self.client_secret}".encode()).decode()
 
   def get_access_token(self):
     print("Getting access token...")
 
-    http_basic_auth = f"{self.client_id}:{self.client_secret}"
-    http_basic_auth_base64 = base64.b64encode(http_basic_auth.encode()).decode()
     token_response = self._session.post(f"{self.auth_server_url}/oauth2/token", data={
       'grant_type': 'client_credentials',
       'client_id': self.client_id,
       'scope': 'CUSTOM'
-    }, headers={'Authorization': f'Basic {http_basic_auth_base64}'})
+    }, headers={'Authorization': f'Basic {self._http_basic_auth}'})
+
+    self._access_token = token_response.json().get('access_token')
     print("Token response:")
     print(json.dumps(token_response.json(), indent=4))
+
+  def introspect_token(self):
+    print("Introspecting token...")
+
+    introspect_response = self._session.post(f"{self.auth_server_url}/oauth2/introspect", data={
+      'token': self._access_token
+    }, headers={'Authorization': f'Basic {self._http_basic_auth}'})
+
+    print("Introspect response:")
+    print(json.dumps(introspect_response.json(), indent=4))

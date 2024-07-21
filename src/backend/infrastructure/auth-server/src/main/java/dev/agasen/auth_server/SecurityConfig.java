@@ -5,6 +5,7 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.time.Duration;
 import java.util.UUID;
 
 import org.springframework.context.annotation.Bean;
@@ -49,6 +50,16 @@ public class SecurityConfig {
    * 5. Client Management - RegisteredClientRepository
    * 6. Key-Pair Management - JWK Source
    * 7. Authorization Server Settings
+   * 
+   * 
+   * OPAQUE TOKEN:
+   *  - does not contain data(that is why it is short)
+   *  - Q: how can someone validate it and get more details about the client (and potentially the user) 
+   *    for whom the auth server generated it?
+   *    - easiest way: ask the auth server
+   *    - the auth server exposes an endpoint where one can send a request with the token
+   *      - TOKEN INTROSPECTION
+   *    
    * 
    * 
    * TODO: remove in memory userDetails and clientRepository - should be retrieved from db
@@ -151,6 +162,7 @@ public class SecurityConfig {
       .tokenSettings(
         TokenSettings.builder()
           .accessTokenFormat(OAuth2TokenFormat.REFERENCE)       // COnfiguring the client to use opaque tokens
+          .accessTokenTimeToLive(Duration.ofHours(12))
           .build()
       )
       .scope("CUSTOM")
