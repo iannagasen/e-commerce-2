@@ -26,10 +26,6 @@ print("Step 1: Making a GET request to the endpoint")
 response = session.get(endpoint, allow_redirects=True)
 print("---------------------------------------------")
 
-# Save the response content to a file
-# with open('login_page.html', 'w') as file:
-#     file.write(response.text)
-
 # Extract the CSRF token from the login page
 print("Step 2: Extracting the CSRF token from the login page")
 soup = BeautifulSoup(response.text, 'html.parser')
@@ -42,11 +38,6 @@ print(f"CSRF token: {csrf_token}")
 
 print("---------------------------------------------")
 
-# Check the login page content to debug
-# print("Login page content:")
-# with open('login_page.html', 'r') as file:
-#     print(file.read())
-
 # Submit the login form
 login_url = "http://localhost:8080/login"
 login_data = {
@@ -58,18 +49,9 @@ login_data = {
 print("Step 3: Submitting the login form")
 login_response = session.post(login_url, data=login_data)
 
-# Save the response content to a file
-# with open('redirected_page.html', 'w') as file:
-#     file.write(login_response.text)
-
 # Print the final URL and status code of the response
 print(f"Final URL after redirection: {login_response.url}")
 print(f"Status code of the login response: {login_response.status_code}")
-
-# Print the content of redirected page for debugging
-# print("Redirected page content:")
-# with open('redirected_page.html', 'r') as file:
-#     print(file.read())
 
 redirected_url_w_auth_code = login_response.url
 code = extract_code_from_url(redirected_url_w_auth_code)
