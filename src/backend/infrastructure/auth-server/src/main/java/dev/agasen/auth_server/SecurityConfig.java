@@ -106,7 +106,7 @@ public class SecurityConfig {
   public RegisteredClientRepository clientRepository() {
     // We need the RegisterClientRepository to manage clients
     // Q: Why is the need of UserDetailsService then???
-    RegisteredClient rc = RegisteredClient
+    RegisteredClient rc_w_auth_code = RegisteredClient
       .withId(UUID.randomUUID().toString())                   // internal id
       .clientId("client")                                     // username
       .clientSecret("secret")                                 // password
@@ -121,7 +121,21 @@ public class SecurityConfig {
       .scope(OidcScopes.OPENID)                               // defines the purpose for the request of an access token
       .build();
 
-    return new InMemoryRegisteredClientRepository(rc);
+
+    RegisteredClient rc_w_client_creds = RegisteredClient
+      .withId(UUID.randomUUID().toString())
+      .clientId(" ")
+      .clientSecret("secret_cc")                              // USING SAME SECRET FOR THE DIFF CLIENTS WILL CAUSE AN EXCEPTION
+      .clientAuthenticationMethod(
+        ClientAuthenticationMethod.CLIENT_SECRET_BASIC
+      )
+      .authorizationGrantType(
+        AuthorizationGrantType.CLIENT_CREDENTIALS              // Client Credentials workflow
+      )
+      .scope("CUSTOM")
+      .build();
+
+    return new InMemoryRegisteredClientRepository(rc_w_auth_code, rc_w_client_creds);
   }
 
   @Bean

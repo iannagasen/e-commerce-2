@@ -1,7 +1,4 @@
-
-from _helpers import AuthorizationCodeGrantType
-
-# pip install requests beautifulsoup4
+from _auth_code_grant_type import AuthorizationCodeGrantType
 
 client = "client"
 secret = "secret"
