@@ -26,6 +26,8 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
+import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
+import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
@@ -124,7 +126,7 @@ public class SecurityConfig {
 
     RegisteredClient rc_w_client_creds = RegisteredClient
       .withId(UUID.randomUUID().toString())
-      .clientId(" ")
+      .clientId("ian_client_creds")
       .clientSecret("secret_cc")                              // USING SAME SECRET FOR THE DIFF CLIENTS WILL CAUSE AN EXCEPTION
       .clientAuthenticationMethod(
         ClientAuthenticationMethod.CLIENT_SECRET_BASIC
@@ -135,7 +137,30 @@ public class SecurityConfig {
       .scope("CUSTOM")
       .build();
 
-    return new InMemoryRegisteredClientRepository(rc_w_auth_code, rc_w_client_creds);
+    // opaque tokens are shorter and does not contain data
+    RegisteredClient rc_w_client_creds_n_opaque_tkns = RegisteredClient
+      .withId(UUID.randomUUID().toString())
+      .clientId("ian_client_creds_opaque_tkn")
+      .clientSecret("secret_cc_opq")
+      .clientAuthenticationMethod(
+        ClientAuthenticationMethod.CLIENT_SECRET_BASIC
+      )
+      .authorizationGrantType(
+        AuthorizationGrantType.CLIENT_CREDENTIALS
+      )
+      .tokenSettings(
+        TokenSettings.builder()
+          .accessTokenFormat(OAuth2TokenFormat.REFERENCE)       // COnfiguring the client to use opaque tokens
+          .build()
+      )
+      .scope("CUSTOM")
+      .build();
+
+    return new InMemoryRegisteredClientRepository(
+      rc_w_auth_code, 
+      rc_w_client_creds,
+      rc_w_client_creds_n_opaque_tkns
+    );
   }
 
   @Bean
