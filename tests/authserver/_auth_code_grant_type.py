@@ -74,3 +74,25 @@ class AuthorizationCodeGrantType:
     }, headers={'Authorization': f'Basic {http_basic_auth_base64}'})
     print("Token response:")
     print(json.dumps(token_response.json(), indent=4))
+    self._access_token = token_response.json().get('access_token')
+
+
+  def get_protected_resource_with_access_token(self, resource_path):
+    print("Getting protected resource with access token...")
+
+    response = self._session.get(resource_path, headers={
+      'Authorization': f'Bearer {self._access_token}'
+    })
+
+    print("Protected resource response:")
+    print(json.dumps(response.json(), indent=4))
+
+  def get_protected_resource_without_access_token(self, resource_path):
+    print("Getting protected resource without access token...")
+
+    response = self._session.get(resource_path)
+
+    if response.status_code == 401:
+      print("Unauthorized access. Please check your access token.")
+
+    print(f"Protected resource response: {response.status_code} {response.reason}")
