@@ -21,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet.Builder;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
@@ -29,6 +30,8 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
+import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
+import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
@@ -50,6 +53,7 @@ public class SecurityConfig {
    * 5. Client Management - RegisteredClientRepository
    * 6. Key-Pair Management - JWK Source
    * 7. Authorization Server Settings
+   * 8. OAuth2TokenCustomizer
    * 
    * 
    * OPAQUE TOKEN:
@@ -59,6 +63,9 @@ public class SecurityConfig {
    *    - easiest way: ask the auth server
    *    - the auth server exposes an endpoint where one can send a request with the token
    *      - TOKEN INTROSPECTION
+   * 
+   * CLAIMS
+   *  - core information that the token carries
    *    
    * 
    * 
@@ -225,6 +232,44 @@ public class SecurityConfig {
      return AuthorizationServerSettings
         .builder()
         .build();
+  }
+
+  @Bean
+  public OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer() {
+    /**
+     * Allows us to customize the JWT token
+     *  - add custom claims
+     *    - claims are the data that the token carries
+     *    - claims are the core information that the token carries
+     */
+    return context -> {
+      Builder claims = context.getClaims();
+      /**
+       * With this change, the access tokens now contain a custom 'priority' field
+       * 
+       * eyJraWQiOiJhNTQwMjdmNC01MzI0LTQxMjYtYWVhYi05YjIxNDVmZDExNzkiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJpYW5fY2xpZW50X2NyZWRzIiwiYXVkIjoiaWFuX2NsaWVudF9jcmVkcyIsIm5iZiI6MTcyMTY0ODQ3Miwic2NvcGUiOlsiQ1VTVE9NIl0sImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCIsInByb3BlcnR5IjoiSElHSCIsImV4cCI6MTcyMTY0ODc3MiwiaWF0IjoxNzIxNjQ4NDcyLCJqdGkiOiJmMWYzZWJiMC04ZmJmLTQ1ZDMtOWQyYS1mM2Q4YzQ1ZDBkNTgifQ.aa_oG3VIKpFhiO2uZO7Je3UDMEA59fkoLmMafeMEwj77ep4Plio89tVcokhEiKavkh8iowdAVhzafNDa5i7MRDHxVzkuJtZyh4CH34MmkdoCVniik85iBCQiA2rSKzmVLJ9qKrAOrsMF9xP8ttCVwu0GRvbUiljrZbaeZc5tgClOef0X2VUZNOFCbl6tdHFdFhQvNgvcRBdMxZzS8XeCTWum8o8vmBHbhud_HsxNHN_ICJkGPpdn2eZjoG1F1vgnraErqiElF4qh9fVlFs55-szgsBv5u0AFhbIfwPPC-ip-G4JYcf9IY7r592oElHT1SDUGPxzVjtA_P-9RX8ay5w
+       * 
+       * if you decode the token, you will see the custom claim
+       * 
+       * {
+       *   "sub": "ian_client_creds",
+       *   "aud": "ian_client_creds",
+       *   "nbf": 1721648472,
+       *   "scope": [
+       *     "CUSTOM"
+       *   ],
+       *   "iss": "http://localhost:8080",
+       *   "property": "HIGH",        <----------------- custom claim
+       *   "exp": 1721648772,
+       *   "iat": 1721648472,
+       *   "jti": "f1f3ebb0-8fbf-45d3-9d2a-f3d8c45d0d58"
+       * }
+       * 
+       * or you could use introspect endpoint /oauth2/introspect to get the details
+       * of the access token
+       */
+      claims.claim("property", "HIGH");
+    };
   }
 
 }

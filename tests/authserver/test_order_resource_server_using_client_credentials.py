@@ -21,6 +21,9 @@ client_creds_grant_type.introspect_token()
 
 resource_server_url = "http://localhost:8103"
 protected_resource_url = f"{resource_server_url}/test"
+# protected_resource_url = f"{resource_server_url}/demo"
 
+print("---------------------------------------------------------------------")
 client_creds_grant_type.get_protected_resource_without_access_token(protected_resource_url)
+print("---------------------------------------------------------------------")
 client_creds_grant_type.get_protected_resource_with_access_token(protected_resource_url)
