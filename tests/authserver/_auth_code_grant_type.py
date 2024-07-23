@@ -64,6 +64,8 @@ class AuthorizationCodeGrantType:
 
 
   def simulate_exchanging_authcode_for_an_access_token(self):
+    # this step needs the client credientials
+    # what if the client credentials were compromised? Apply PKCE protection
     http_basic_auth = f"{self.client_id}:{self.client_secret}"
     http_basic_auth_base64 = base64.b64encode(http_basic_auth.encode()).decode()
     token_response = self._session.post(f"{self.auth_server_url}/oauth2/token", data={

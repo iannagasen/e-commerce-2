@@ -175,10 +175,19 @@ public class SecurityConfig {
       .scope("CUSTOM")
       .build();
 
+    RegisteredClient order_service_client = RegisteredClient
+      .withId(UUID.randomUUID().toString())
+      .clientId("order_service_client")
+      .clientSecret("order_service_client_secret")
+      .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+      .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+      .build();
+
     return new InMemoryRegisteredClientRepository(
       rc_w_auth_code, 
       rc_w_client_creds,
-      rc_w_client_creds_n_opaque_tkns
+      rc_w_client_creds_n_opaque_tkns,
+      order_service_client
     );
   }
 

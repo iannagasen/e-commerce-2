@@ -17,8 +17,11 @@ auth_code_grant = AuthorizationCodeGrantType(
   password=password
 )
 
+# Step 1: Call the protected resource, Step 2: this will redirect to the login page
 auth_code_grant.simulate_call_protected_resource()
+# Step 3: Extract the CSRF token and login, Step 4: this will redirect to the provided redirect URI
 auth_code_grant.extract_csrf_token_and_login()
+# Step 5: Exchange the authorization code for an access token, Step 6: this will return the access token
 auth_code_grant.simulate_exchanging_authcode_for_an_access_token()
 
 

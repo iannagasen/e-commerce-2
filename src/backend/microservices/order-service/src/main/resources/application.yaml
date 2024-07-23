@@ -16,6 +16,11 @@ app:
 
 authserver:
   keyset-uri: http://localhost:8080/oauth2/jwks
+  introspection-uri: http://localhost:8080/oauth2/introspect
+
+resourceserver:
+  client-id: order_service_client
+  client-secret: order_service_client_secret
 
 spring.data.mongodb:
   host: localhost
