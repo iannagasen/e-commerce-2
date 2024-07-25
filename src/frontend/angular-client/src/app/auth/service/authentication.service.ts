@@ -1,8 +1,9 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { AuthenticationResponse } from "../model/authentication-response";
-import { map } from 'rxjs/operators';
-import { Observable } from "rxjs";
+import { flatMap, map, mergeMap, tap } from 'rxjs/operators';
+import { Observable, of } from "rxjs";
+import { ActivatedRoute } from "@angular/router";
 
 export const ACCESS_TOKEN = 'access_token';
 export const REFRESH_TOKEN = 'refresh_token';
@@ -15,40 +16,45 @@ export class AuthenticationService {
   private readonly REDIRECT_URL = 'http://localhost:4200';
   private readonly CLIENT_ID = 'angular_client';
   private readonly CLIENT_SECRET = 'angular_client_secret';
+  private readonly SCOPE = 'write';
 
 
   constructor(
-    private _http: HttpClient
+    private _http: HttpClient, 
   ) {}
 
-  isLoggedIn() {
+  isLoggedIn(): Observable<boolean> {
     console.log('Checking if user is logged in')
     const accessToken = localStorage.getItem(ACCESS_TOKEN);
 
     if (accessToken === null || accessToken === '') {
-      return false;
+      return of(false);
     }
 
-    let result = false;
-    this.introspectToken(accessToken).subscribe({
-      next: data => {
+    return this.introspectToken(accessToken).pipe(
+      mergeMap(data => {
         if (data.active) {
-          result = true;
+          return of(true);
         } else {
           localStorage.removeItem(ACCESS_TOKEN);
           localStorage.removeItem(REFRESH_TOKEN);
-          result = false;
+          return of(false);
         }
-      },
-      error: err => {
-        console.error(err);
-        result = false;
-      }
-    });
-    return result;
+      })
+    );
   }
 
-  exchangeCodeForToken(code: string) {
+  redirectToOauthLogin() {
+    window.location.href = 
+      `${this.AUTH_SERVER_URL}/oauth2/authorize?response_type=code` +
+      `&client_id=${this.CLIENT_ID}` +
+      `&redirect_uri=${this.REDIRECT_URL}` +
+      `&scope=${this.SCOPE}` +
+      `&state=abc123`;
+  }
+
+
+  exchangeCodeForToken(code: string): Observable<AuthenticationResponse> {
     const params = new URLSearchParams();
     params.append('grant_type', 'authorization_code');
     params.append('code', code);
@@ -63,11 +69,12 @@ export class AuthenticationService {
       'Authorization': `Basic ${basicAuth}`
     };
 
-    return this._http.post(`${this.AUTH_SERVER_URL}/oauth2/token`, params.toString(), { headers })
-      .subscribe({
-        next: data => this.saveToken(data as AuthenticationResponse),
-        error: err => alert('Invalid code')
-      })
+    console.log("performing login");
+
+    return this._http.post(`${this.AUTH_SERVER_URL}/oauth2/token`, params.toString(), { headers }).pipe(
+      map(data => data as AuthenticationResponse),
+      tap(data => this.saveToken(data))
+    );
   }
 
   private saveToken(token: AuthenticationResponse) {
@@ -90,7 +97,8 @@ export class AuthenticationService {
     return this._http.post(`${this.AUTH_SERVER_URL}/oauth2/introspect`, params.toString(), { headers }).pipe(
       map((data: any) => ({
         active: data.active
-      }))
+      })),
+      tap(data => console.log('Token is active: ' + data.active)) 
     );
   }
 

@@ -1,10 +1,13 @@
 package dev.agasen.ecom.order.security;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration.WebFluxConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.web.reactive.config.CorsRegistry;
+import org.springframework.web.reactive.config.WebFluxConfigurer;
 
 @Configuration
 public class SecurityConfig {
@@ -46,10 +49,25 @@ public class SecurityConfig {
       )
     );
 
-    http.authorizeExchange(
-      a -> a.anyExchange().authenticated()
+    http.authorizeExchange(a -> a
+        .pathMatchers("/public").permitAll()
+        .anyExchange().authenticated()
     );
 
     return http.build();
+  }
+
+
+  @Bean
+  public WebFluxConfigurer corsConfigurer() {
+    return new WebFluxConfigurer() {
+      @Override
+      public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+          .allowedOrigins("http://localhost:4200")
+          .allowedMethods("GET", "POST", "PUT", "DELETE")
+          .allowedHeaders("*");
+      }
+    };
   }
 } 

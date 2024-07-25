@@ -202,6 +202,7 @@ public class SecurityConfig {
       .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
       .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
       .redirectUri("http://localhost:4200")
+      .scope("write")
       .build();
 
     return new InMemoryRegisteredClientRepository(
