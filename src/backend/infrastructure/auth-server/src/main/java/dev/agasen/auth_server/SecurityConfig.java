@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.context.annotation.Bean;
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -35,12 +37,18 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Configuration
 public class SecurityConfig {
@@ -54,6 +62,8 @@ public class SecurityConfig {
    * 6. Key-Pair Management - JWK Source
    * 7. Authorization Server Settings
    * 8. OAuth2TokenCustomizer
+   * 
+   * 9. CORS Configuration -- mehh
    * 
    * 
    * OPAQUE TOKEN:
@@ -98,9 +108,11 @@ public class SecurityConfig {
     
     http.formLogin(Customizer.withDefaults());
 
-    http.authorizeHttpRequests(req -> {
-      req.anyRequest().authenticated();
-    });
+    http.authorizeHttpRequests(req -> req
+      .anyRequest().authenticated()
+    );
+
+    // http.cors(cors -> cors.configurationSource(this::angularClientCorsConfigSource));
 
     return http.build();
   }
@@ -183,11 +195,21 @@ public class SecurityConfig {
       .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
       .build();
 
+    RegisteredClient angular_client = RegisteredClient
+      .withId(UUID.randomUUID().toString())
+      .clientId("angular_client")
+      .clientSecret("angular_client_secret")
+      .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+      .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+      .redirectUri("http://localhost:4200")
+      .build();
+
     return new InMemoryRegisteredClientRepository(
       rc_w_auth_code, 
       rc_w_client_creds,
       rc_w_client_creds_n_opaque_tkns,
-      order_service_client
+      order_service_client,
+      angular_client
     );
   }
 
@@ -278,6 +300,35 @@ public class SecurityConfig {
        * of the access token
        */
       claims.claim("property", "HIGH");
+    };
+  }
+
+  private CorsConfiguration angularClientCorsConfigSource(HttpServletRequest request) {
+    /**
+     * TODO: test if this will work 
+     *    when setAllowCredentials set to false and 
+     *    when set Allowed Origin will only be localhost:4200 - Angular Client
+     * 
+     * ServerWebExchange for reactive web instead of HttpServletRequest
+     */
+    var angularClient = new CorsConfiguration();
+    angularClient.setAllowCredentials(false);
+    angularClient.setAllowedOrigins(List.of("*"));
+    angularClient.setAllowedMethods(List.of("*"));
+    angularClient.setAllowedHeaders(List.of("*"));
+    return angularClient;
+  }
+
+  @Bean
+  public WebMvcConfigurer corsConfigurer() {
+    return new WebMvcConfigurer() {
+      @Override
+      public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+          .allowedOrigins("http://localhost:4200")
+          .allowedMethods("GET", "POST", "PUT", "DELETE")
+          .allowedHeaders("*");
+      }
     };
   }
 
