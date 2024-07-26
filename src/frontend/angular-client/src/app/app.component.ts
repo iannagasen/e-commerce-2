@@ -6,11 +6,18 @@ import { AuthenticationService } from './auth/service/authentication.service';
 import { HttpClient } from '@angular/common/http';
 import { EMPTY, map, merge, mergeMap, Observable, of, tap } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
+import { PublicComponent } from './home/public/public.component';
+import { PublicCategoryComponent } from './category/public-category/public-category.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet,CommonModule],
+  imports: [
+    RouterOutlet,
+    CommonModule, 
+    PublicComponent, 
+    PublicCategoryComponent
+  ],
   styleUrl: './app.component.scss',
   template: `
     <div *ngIf="authStatus$ | async as status">
@@ -22,6 +29,7 @@ import { fromPromise } from 'rxjs/internal/observable/innerFrom';
         <button (click)="loginViaOauth2()">Login using oauth2</button>
       </div>
     </div>
+    <router-outlet />
   `
 
 })
