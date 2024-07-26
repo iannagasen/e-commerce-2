@@ -37,7 +37,15 @@ export class AppComponent implements OnInit {
   ) { }
   
   ngOnInit(): void {
-    this.authStatus$ = this.auth.isLoggedIn().pipe(
+    this.authStatus$ = this.checkLoggedInStatus();
+  }
+
+  loginViaOauth2() {
+    this.auth.redirectToOauthLogin();
+  }
+
+  private checkLoggedInStatus() {
+    return this.auth.isLoggedIn().pipe(
       tap(data => console.log("Is user logged in: " + data)),
       mergeMap(loggedIn => {
         if (loggedIn) {
@@ -62,10 +70,6 @@ export class AppComponent implements OnInit {
       }),
       map(isLoggedIn => ({ isLoggedIn }))
     )
-  }
-
-  loginViaOauth2() {
-    this.auth.redirectToOauthLogin();
   }
 
 
