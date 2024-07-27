@@ -23,7 +23,7 @@ export class AuthenticationService {
     private _http: HttpClient, 
   ) {}
 
-  isLoggedIn(): Observable<boolean> {
+  public isLoggedIn(): Observable<boolean> {
     console.log('Checking if user is logged in')
     const accessToken = localStorage.getItem(ACCESS_TOKEN);
 
@@ -44,7 +44,7 @@ export class AuthenticationService {
     );
   }
 
-  redirectToOauthLogin() {
+  public redirectToOauthLogin() {
     window.location.href = 
       `${this.AUTH_SERVER_URL}/oauth2/authorize?response_type=code` +
       `&client_id=${this.CLIENT_ID}` +
@@ -54,7 +54,7 @@ export class AuthenticationService {
   }
 
 
-  exchangeCodeForToken(code: string): Observable<AuthenticationResponse> {
+  public exchangeCodeForToken(code: string): Observable<AuthenticationResponse> {
     const params = new URLSearchParams();
     params.append('grant_type', 'authorization_code');
     params.append('code', code);
@@ -101,5 +101,6 @@ export class AuthenticationService {
       tap(data => console.log('Token is active: ' + data.active)) 
     );
   }
+
 
 }

@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { AuthService } from './api/authservice/auth.service';
 import { AuthenticationService } from './auth/service/authentication.service';
 import { HttpClient } from '@angular/common/http';
 import { EMPTY, map, merge, mergeMap, Observable, of, tap } from 'rxjs';
@@ -21,13 +20,14 @@ import { PublicCategoryComponent } from './category/public-category/public-categ
   styleUrl: './app.component.scss',
   template: `
     <div *ngIf="authStatus$ | async as status">
-      <div>{{status.isLoggedIn ? 'User Logged in' : 'No user Logged in'}}</div>
-
-      <div *ngIf="!status.isLoggedIn">
-        <div>Message from backend</div>
-
-        <button (click)="loginViaOauth2()">Login using oauth2</button>
-      </div>
+      <!-- <ng-template [ngIf]="isHome$ | async"> -->
+        <div>{{status.isLoggedIn ? 'User Logged in' : 'No user Logged in'}}</div>
+        
+        <div *ngIf="!status.isLoggedIn">
+          <div>Message from backend</div>
+          <button (click)="loginViaOauth2()">Login using oauth2</button>
+        </div>
+      <!-- </ng-template> -->
     </div>
     <router-outlet />
   `
@@ -36,6 +36,7 @@ import { PublicCategoryComponent } from './category/public-category/public-categ
 export class AppComponent implements OnInit {
 
   authStatus$!: Observable<{ isLoggedIn: boolean}>;
+  isHome$!: Observable<boolean>;
 
   constructor(
     private auth: AuthenticationService,
@@ -46,6 +47,7 @@ export class AppComponent implements OnInit {
   
   ngOnInit(): void {
     this.authStatus$ = this.checkLoggedInStatus();
+    // this.isHome$ = this.checkIfHome();
   }
 
   loginViaOauth2() {
@@ -53,9 +55,15 @@ export class AppComponent implements OnInit {
   }
 
   private checkLoggedInStatus() {
+    /**
+     * 1. Check logged in status
+     * 2. If not logged in, check if there is a code in the query params (since we may be redirected from the oauth2 server)
+     * 3. If there is a code, exchange it for a token
+     */
     return this.auth.isLoggedIn().pipe(
       tap(data => console.log("Is user logged in: " + data)),
       mergeMap(loggedIn => {
+        console.log("RUNNING");
         if (loggedIn) {
           return of(true);
         } else {
@@ -77,6 +85,12 @@ export class AppComponent implements OnInit {
         }
       }),
       map(isLoggedIn => ({ isLoggedIn }))
+    )
+  }
+
+  private checkIfHome() {
+    return this.router.events.pipe(
+      map(event => event instanceof NavigationEnd && event.url === '/'),
     )
   }
 

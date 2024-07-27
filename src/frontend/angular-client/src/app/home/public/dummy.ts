@@ -7,7 +7,7 @@ export const DUMMY_CATEGORIES: Category[] =
     id: 1,
     name: "Electronics",
     description: "Electronic gadgets",
-    imageUrl: "https://images.unsplash.com/photo-1511556820780-d912e42b4987"
+    imageUrl: "https://img.lazcdn.com/g/p/1ca971e2cdbdbe048410a738dfc4429b.jpg_170x170q80.jpg"
   },
   {
     id: 2,

@@ -35,6 +35,7 @@ class AuthorizationCodeGrantType:
     
     # Make a GET request to the endpoint
     self._response_that_will_redirect_to_login = self._session.get(endpoint, allow_redirects=True)
+    print(self._response_that_will_redirect_to_login.url)
     
 
   def extract_csrf_token_and_login(self):
@@ -98,3 +99,15 @@ class AuthorizationCodeGrantType:
       print("Unauthorized access. Please check your access token.")
 
     print(f"Protected resource response: {response.status_code} {response.reason}")
+ 
+
+  def get_user_info(self):
+    print("Getting user info... using post")
+    response = self._session.post(f"{self.auth_server_url}/userinfo", headers={
+      'Authorization': f'Bearer {self._access_token}'
+    })
+    if response.status_code == 200:
+      user_info = response.text
+      print("User Info:", user_info)
+    else:
+      print("Failed to get user info:", response.status_code, response.text)

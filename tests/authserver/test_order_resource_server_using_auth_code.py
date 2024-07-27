@@ -1,7 +1,9 @@
 from _auth_code_grant_type import AuthorizationCodeGrantType
+import time
 
-client = "client"
-secret = "secret"
+
+client = "angular_client"
+secret = "angular_client_secret"
 redirect_uri = "my.redirect.uri"
 username = "ian"
 password = "pass"
@@ -30,3 +32,4 @@ protected_resource_url = f"{resource_server_url}/test"
 
 auth_code_grant.get_protected_resource_without_access_token(protected_resource_url)
 auth_code_grant.get_protected_resource_with_access_token(protected_resource_url)
+auth_code_grant.get_user_info()
