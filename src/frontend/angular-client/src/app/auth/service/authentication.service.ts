@@ -2,8 +2,9 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { AuthenticationResponse } from "../model/authentication-response";
 import { flatMap, map, mergeMap, tap } from 'rxjs/operators';
-import { Observable, of } from "rxjs";
+import { EMPTY, Observable, of } from "rxjs";
 import { ActivatedRoute } from "@angular/router";
+import { UserInfo } from "../model/user-info";
 
 export const ACCESS_TOKEN = 'access_token';
 export const REFRESH_TOKEN = 'refresh_token';
@@ -16,7 +17,7 @@ export class AuthenticationService {
   private readonly REDIRECT_URL = 'http://localhost:4200';
   private readonly CLIENT_ID = 'angular_client';
   private readonly CLIENT_SECRET = 'angular_client_secret';
-  private readonly SCOPE = 'write';
+  private readonly SCOPE = 'openid';
 
 
   constructor(
@@ -75,6 +76,22 @@ export class AuthenticationService {
       map(data => data as AuthenticationResponse),
       tap(data => this.saveToken(data))
     );
+  }
+
+  public getUserInfo() {
+    const accessToken = localStorage.getItem(ACCESS_TOKEN);
+    console.log("Access Token" + accessToken);
+    if (accessToken === null || accessToken === '') {
+      return EMPTY;
+    }
+
+    const headers = {
+      'Content-type': 'application/x-www-form-urlencoded',
+      'Authorization': `Bearer ${accessToken}`
+    };
+
+    return this._http.get(`${this.AUTH_SERVER_URL}/userinfo`, { headers })
+      .pipe(map(data => data as UserInfo), tap(console.log));
   }
 
   private saveToken(token: AuthenticationResponse) {

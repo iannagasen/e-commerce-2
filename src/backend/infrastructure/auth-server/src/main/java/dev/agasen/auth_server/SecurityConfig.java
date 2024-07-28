@@ -212,7 +212,6 @@ public class SecurityConfig {
       .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
       .redirectUri("http://localhost:4200")
       .redirectUri("my.redirect.uri")
-      .scope("write")
       .scope(OidcScopes.OPENID)
       // .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
       .build();

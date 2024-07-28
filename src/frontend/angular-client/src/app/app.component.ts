@@ -3,10 +3,11 @@ import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/ro
 import { CommonModule } from '@angular/common';
 import { AuthenticationService } from './auth/service/authentication.service';
 import { HttpClient } from '@angular/common/http';
-import { EMPTY, map, merge, mergeMap, Observable, of, tap } from 'rxjs';
+import { concat, concatMap, EMPTY, filter, map, merge, mergeMap, Observable, of, tap } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 import { PublicComponent } from './home/public/public.component';
 import { PublicCategoryComponent } from './category/public-category/public-category.component';
+import { UserInfo } from './auth/model/user-info';
 
 @Component({
   selector: 'app-root',
@@ -27,6 +28,8 @@ import { PublicCategoryComponent } from './category/public-category/public-categ
           <div>Message from backend</div>
           <button (click)="loginViaOauth2()">Login using oauth2</button>
         </div>
+
+        <div *ngIf="user$ | async as userInfo">{{userInfo.sub}}</div>
       <!-- </ng-template> -->
     </div>
     <router-outlet />
@@ -37,6 +40,7 @@ export class AppComponent implements OnInit {
 
   authStatus$!: Observable<{ isLoggedIn: boolean}>;
   isHome$!: Observable<boolean>;
+  user$!: Observable<UserInfo>;
 
   constructor(
     private auth: AuthenticationService,
@@ -47,7 +51,9 @@ export class AppComponent implements OnInit {
   
   ngOnInit(): void {
     this.authStatus$ = this.checkLoggedInStatus();
+    this.user$ = this.authStatus$.pipe(this.getUserInfoIfLoggedIn());
     // this.isHome$ = this.checkIfHome();
+  
   }
 
   loginViaOauth2() {
@@ -94,5 +100,11 @@ export class AppComponent implements OnInit {
     )
   }
 
+  private getUserInfoIfLoggedIn() {
+    return (source: Observable<{isLoggedIn: boolean}>) => source.pipe(
+      filter(status => status.isLoggedIn),
+      mergeMap(_ => this.auth.getUserInfo())
+    )
+  }
 
 }
