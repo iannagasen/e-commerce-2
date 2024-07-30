@@ -1,4 +1,4 @@
-package dev.agasen.ecom.order.security;
+package dev.agasen.ecom.api.auth.resourceserver;
 
 import java.util.List;
 
@@ -10,15 +10,15 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 @Component
-public class JwtAuthenticationConverter implements Converter<Jwt, Mono<CustomAuthentication>>{
+public class EcomJwtAuthenticationConverter implements Converter<Jwt, Mono<EcomAuthentication>>{
 
   @Override
-  public Mono<CustomAuthentication> convert(Jwt source) {
+  public Mono<EcomAuthentication> convert(Jwt source) {
     List<GrantedAuthority> authorities = List.of(() -> "read");
 
     String priority = String.valueOf(source.getClaims().get("priority"));
 
-    return Mono.just(new CustomAuthentication(source, authorities, priority));
+    return Mono.just(new EcomAuthentication(source, authorities, priority));
   }
 
 }

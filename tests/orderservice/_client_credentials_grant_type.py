@@ -7,10 +7,9 @@ from _helpers import extract_code_from_url
 # pip install requests beautifulsoup4
 
 class ClientCredentialsGrantType:
-  def __init__(self, client_id, client_secret, redirect_uri, auth_server_url, token_endpoint,):
+  def __init__(self, client_id, client_secret, auth_server_url, token_endpoint,):
     self.client_id = client_id
     self.client_secret = client_secret
-    self.redirect_uri = redirect_uri
     self.auth_server_url = auth_server_url
     self.token_endpoint = token_endpoint
 
@@ -50,7 +49,7 @@ class ClientCredentialsGrantType:
 
     print("Protected resource response:")
     print(json.dumps(response.json(), indent=4))
-
+    
   def get_protected_resource_without_access_token(self, resource_path):
     print("Getting protected resource without access token...")
 

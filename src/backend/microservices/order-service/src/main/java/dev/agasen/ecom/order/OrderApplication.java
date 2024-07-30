@@ -6,14 +6,19 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import dev.agasen.ecom.api.auth.resourceserver.EcomAuthentication;
+import lombok.extern.slf4j.Slf4j;
 
 
 @SpringBootApplication
 @ComponentScan("dev.agasen")
 @RestController
-public class OrderApplication {
+@Slf4j
+ class OrderApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(OrderApplication.class, args);
@@ -25,7 +30,8 @@ public class OrderApplication {
 	}
 
 	@GetMapping("/public")
-	public Map<String, String> publicEndpoint() {
+	public Map<String, String> publicEndpoint(@AuthenticationPrincipal EcomAuthentication customAuthentication) {
+		log.info("Custom Authentication: " + customAuthentication);
 		return Map.of("data", "this is a public endpoint");
 	}
 	

@@ -27,12 +27,12 @@ public class PurchaseOrderEntity {
 
   public static final String SEQUENCE_NAME = "purchase_order_sequence";
 
-  private @Id String id;
-  private @Version Integer version;
-  private @Indexed(unique=true) Long orderId;
-  private Long customerId;
-  private List<OrderItem> items;
-  private OrderStatus orderStatus;
+  private @Id String                  id;
+  private @Version Integer            version;
+  private @Indexed(unique=true) Long  orderId;
+  private Long                        customerId;
+  private List<OrderItem>             items;
+  private OrderStatus                 orderStatus;
 
   public List<OrderItem> getItems() {
     return items == null ? List.of() : items;

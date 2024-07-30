@@ -78,3 +78,63 @@ payment_db.payment.insertMany([
   }
 ]);
 
+order_db = db.getSiblingDB('order-db');
+order_db.createCollection('purchase_order');
+
+order_db.purchase_order.insertMany([
+  {
+    "orderId": 1,
+    "customerId": 2,
+    "items": [
+      {
+        "productId": 2,
+        "quantity": 300,
+        "price": 10
+      },
+      {
+        "productId": 2,
+        "quantity": 2,
+        "price": 10
+      }
+    ],
+    "orderStatus": "PENDING"
+  },
+  
+  {
+    "orderId": 2,
+    "customerId": 2,
+    "items": [
+      {
+        "productId": 2,
+        "quantity": 300,
+        "price": 10
+      },
+      {
+        "productId": 2,
+        "quantity": 2,
+        "price": 10
+      }
+    ],
+    "orderStatus": "PENDING"
+  },
+
+  
+  {
+    "orderId": 3,
+    "customerId": 2,
+    "items": [
+      {
+        "productId": 2,
+        "quantity": 300,
+        "price": 10
+      },
+      {
+        "productId": 2,
+        "quantity": 2,
+        "price": 10
+      }
+    ],
+    "orderStatus": "PENDING"
+  }
+  
+]);
