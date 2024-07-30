@@ -35,19 +35,24 @@ public class SecurityConfig {
   @Bean
   public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) throws Exception {
 
-    // http.oauth2ResourceServer(        // configure the app as resoruce server
-    //   c -> c.jwt(                     // configure the app to use JWT
-    //     j -> j.jwkSetUri(keySsetUri)  // configure the public key set URL that the reesource server will use to validate JWTs
-    //           .jwtAuthenticationConverter(jwtAuthenticationConverter)
+    http.oauth2ResourceServer(        // configure the app as resoruce server
+      c -> c.jwt(                     // configure the app to use JWT
+        j -> j.jwkSetUri(keySsetUri)  // configure the public key set URL that the reesource server will use to validate JWTs
+              .jwtAuthenticationConverter(jwtAuthenticationConverter)
+      )
+    );
+
+    /**
+     *  Caused by: java.lang.ClassNotFoundException: com.nimbusds.oauth2.sdk.http.HTTPResponse
+     *  will favor jwt token for now
+     */
+    // http.oauth2ResourceServer(
+    //   c -> c.opaqueToken(
+    //     token -> token.introspectionUri(introspectionUri)
+    //                   .introspectionClientCredentials(clientId, clientSecret)
     //   )
     // );
 
-    http.oauth2ResourceServer(
-      c -> c.opaqueToken(
-        token -> token.introspectionUri(introspectionUri)
-                      .introspectionClientCredentials(clientId, clientSecret)
-      )
-    );
 
     http.authorizeExchange(a -> a
         .pathMatchers("/public").permitAll()
