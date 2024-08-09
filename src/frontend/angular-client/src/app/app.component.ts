@@ -29,6 +29,11 @@ import { UserInfo } from './auth/model/user-info';
           <button (click)="loginViaOauth2()">Login using oauth2</button>
         </div>
 
+        <div *ngIf="status.isLoggedIn">
+          <button (click)="logout()">Logout</button>
+        </div>
+
+
         <div *ngIf="user$ | async as userInfo">{{userInfo.sub}}</div>
       <!-- </ng-template> -->
     </div>
@@ -58,6 +63,12 @@ export class AppComponent implements OnInit {
 
   loginViaOauth2() {
     this.auth.redirectToOauthLogin();
+  }
+
+  logout() {
+    this.authStatus$ = this.auth.logout().pipe(
+      map(data => ({isLoggedIn: !data}))
+    );
   }
 
   private checkLoggedInStatus() {
