@@ -22,17 +22,16 @@ import { UserInfo } from './auth/model/user-info';
   template: `
     <div *ngIf="authStatus$ | async as status">
       <!-- <ng-template [ngIf]="isHome$ | async"> -->
-        <div>{{status.isLoggedIn ? 'User Logged in' : 'No user Logged in'}}</div>
+        <div>{{status.val === 'LOGGED_IN' ? 'User Logged in' : 'No user Logged in'}}</div>
         
-        <div *ngIf="!status.isLoggedIn">
+        <div *ngIf="!(status.val === 'LOGGED_IN')">
           <div>Message from backend</div>
           <button (click)="loginViaOauth2()">Login using oauth2</button>
         </div>
 
-        <div *ngIf="status.isLoggedIn">
+        <div *ngIf="status.val === 'LOGGED_IN'">
           <button (click)="logout()">Logout</button>
         </div>
-
 
         <div *ngIf="user$ | async as userInfo">{{userInfo.sub}}</div>
       <!-- </ng-template> -->
@@ -43,7 +42,7 @@ import { UserInfo } from './auth/model/user-info';
 })
 export class AppComponent implements OnInit {
 
-  authStatus$!: Observable<{ isLoggedIn: boolean}>;
+  authStatus$!: Observable<AuthStatus>;
   isHome$!: Observable<boolean>;
   user$!: Observable<UserInfo>;
 
@@ -67,8 +66,35 @@ export class AppComponent implements OnInit {
 
   logout() {
     this.authStatus$ = this.auth.logout().pipe(
-      map(data => ({isLoggedIn: !data}))
-    );
+      filter(data => data),
+      
+      map(data => ({ val: 'LOGGED_OUT' }))
+
+    )
+  }
+  
+  private authAction(authStatus: AuthStatus): Observable<AuthStatus> {
+    switch (authStatus.val) {
+      case 'LOGGED_IN': return of(authStatus);
+      case 'LOGGED_OUT': return this.route.queryParams.pipe(
+        mergeMap(params => { 
+          if (params?.['code']) {
+            return this.auth.exchangeCodeForToken(params['code']).pipe(
+              mergeMap((_) => fromPromise(this.router.navigate([],{
+                queryParams: { code: null, state: null },
+                queryParamsHandling: 'merge',
+                replaceUrl: true
+              }))),
+              map(() => ({ val: 'LOGGED_IN' } as AuthStatus)));
+          } else {
+            return of({ val: 'LOGGED_OUT' } as AuthStatus);
+          }
+        })
+      );
+      case 'TOKEN_EXPIRED': return of(authStatus);
+      case 'NEW_USER': return of(authStatus);
+    }
+
   }
 
   private checkLoggedInStatus() {
@@ -77,31 +103,9 @@ export class AppComponent implements OnInit {
      * 2. If not logged in, check if there is a code in the query params (since we may be redirected from the oauth2 server)
      * 3. If there is a code, exchange it for a token
      */
-    return this.auth.isLoggedIn().pipe(
+    return this.auth.checkStatus().pipe(
       tap(data => console.log("Is user logged in: " + data)),
-      mergeMap(loggedIn => {
-        console.log("RUNNING");
-        if (loggedIn) {
-          return of(true);
-        } else {
-          return this.route.queryParams.pipe(
-            mergeMap(params => { 
-              if (params?.['code']) {
-                return this.auth.exchangeCodeForToken(params['code']).pipe(
-                  mergeMap((_) => fromPromise(this.router.navigate([],{
-                    queryParams: { code: null, state: null },
-                    queryParamsHandling: 'merge',
-                    replaceUrl: true
-                  }))),
-                  map(() => true));
-              } else {
-                return of(false);
-              } 
-            })
-          );
-        }
-      }),
-      map(isLoggedIn => ({ isLoggedIn }))
+      mergeMap(authStatus => this.authAction(authStatus)),
     )
   }
 
@@ -112,8 +116,8 @@ export class AppComponent implements OnInit {
   }
 
   private getUserInfoIfLoggedIn() {
-    return (source: Observable<{isLoggedIn: boolean}>) => source.pipe(
-      filter(status => status.isLoggedIn),
+    return (source: Observable<AuthStatus>) => source.pipe(
+      filter(status => status.val === 'LOGGED_IN'),
       mergeMap(_ => this.auth.getUserInfo())
     )
   }

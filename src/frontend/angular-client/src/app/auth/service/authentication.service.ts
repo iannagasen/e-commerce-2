@@ -23,6 +23,27 @@ export class AuthenticationService {
   constructor(
     private _http: HttpClient, 
   ) {}
+
+  public checkStatus(): Observable<AuthStatus> {
+    console.log('Checking if user is logged in')
+    const accessToken = localStorage.getItem(ACCESS_TOKEN);
+    
+    if (accessToken === null || accessToken === '') {
+      return of({ val: 'LOGGED_IN' })
+    }
+    
+    return this.introspectToken(accessToken).pipe(
+      mergeMap(data => {
+        if (data.active) {
+          return of({ val: 'LOGGED_OUT' } as AuthStatus );
+        } else {
+          return of({ val: 'TOKEN_EXPIRED' } as AuthStatus);
+        }
+      })
+    );
+  }
+
+
   
   public isLoggedIn(): Observable<boolean> {
     console.log('Checking if user is logged in')
