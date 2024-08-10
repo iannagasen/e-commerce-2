@@ -5,6 +5,7 @@ import { flatMap, map, mergeMap, tap } from 'rxjs/operators';
 import { EMPTY, Observable, of } from "rxjs";
 import { ActivatedRoute } from "@angular/router";
 import { UserInfo } from "../model/user-info";
+import { AuthStatus } from "../model/auth-status";
 
 export const ACCESS_TOKEN = 'access_token';
 export const REFRESH_TOKEN = 'refresh_token';
@@ -29,40 +30,11 @@ export class AuthenticationService {
     const accessToken = localStorage.getItem(ACCESS_TOKEN);
     
     if (accessToken === null || accessToken === '') {
-      return of({ val: 'LOGGED_IN' })
+      return of({ val: 'LOGGED_OUT' })
     }
     
     return this.introspectToken(accessToken).pipe(
-      mergeMap(data => {
-        if (data.active) {
-          return of({ val: 'LOGGED_OUT' } as AuthStatus );
-        } else {
-          return of({ val: 'TOKEN_EXPIRED' } as AuthStatus);
-        }
-      })
-    );
-  }
-
-
-  
-  public isLoggedIn(): Observable<boolean> {
-    console.log('Checking if user is logged in')
-    const accessToken = localStorage.getItem(ACCESS_TOKEN);
-    
-    if (accessToken === null || accessToken === '') {
-      return of(false);
-    }
-    
-    return this.introspectToken(accessToken).pipe(
-      mergeMap(data => {
-        if (data.active) {
-          return of(true);
-        } else {
-          localStorage.removeItem(ACCESS_TOKEN);
-          localStorage.removeItem(REFRESH_TOKEN);
-          return of(false);
-        }
-      })
+      map(data => ({ val: data.active ? 'LOGGED_IN' : 'LOGGED_OUT' }))
     );
   }
   
@@ -116,7 +88,6 @@ export class AuthenticationService {
   }
   
   private saveToken(token: AuthenticationResponse) {
-    localStorage.setItem(ACCESS_TOKEN, token.access_token)
     localStorage.setItem(REFRESH_TOKEN, token.refresh_token)
     console.log('Obtained access token')
   }

@@ -3,11 +3,12 @@ import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/ro
 import { CommonModule } from '@angular/common';
 import { AuthenticationService } from './auth/service/authentication.service';
 import { HttpClient } from '@angular/common/http';
-import { concat, concatMap, EMPTY, filter, map, merge, mergeMap, Observable, of, tap } from 'rxjs';
+import { concat, concatMap, EMPTY, filter, map, merge, mergeMap, Observable, of, switchMap, tap } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 import { PublicComponent } from './home/public/public.component';
 import { PublicCategoryComponent } from './category/public-category/public-category.component';
 import { UserInfo } from './auth/model/user-info';
+import { AuthStatus } from './auth/model/auth-status';
 
 @Component({
   selector: 'app-root',
@@ -79,6 +80,7 @@ export class AppComponent implements OnInit {
       case 'LOGGED_OUT': return this.route.queryParams.pipe(
         mergeMap(params => { 
           if (params?.['code']) {
+            console.log('no code params');
             return this.auth.exchangeCodeForToken(params['code']).pipe(
               mergeMap((_) => fromPromise(this.router.navigate([],{
                 queryParams: { code: null, state: null },
@@ -118,7 +120,7 @@ export class AppComponent implements OnInit {
   private getUserInfoIfLoggedIn() {
     return (source: Observable<AuthStatus>) => source.pipe(
       filter(status => status.val === 'LOGGED_IN'),
-      mergeMap(_ => this.auth.getUserInfo())
+      concatMap(_ => this.auth.getUserInfo())
     )
   }
 
