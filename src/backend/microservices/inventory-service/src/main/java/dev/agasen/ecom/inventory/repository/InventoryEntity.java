@@ -24,12 +24,13 @@ public class InventoryEntity {
   
   public @Transient static final String SEQUENCE_NAME = "product-inventory-sequence";
 
-  private @Id String id;
+  private @Id                   String id;
   private @Indexed(unique=true) Long inventoryId;
   private @Indexed(unique=true) Long productId;
-  private int stock;
-  private @Transient List<InventoryUpdate> history;
-  private @Transient InventoryUpdate lastUpdate;
+  private                       int stock;
+  private @Transient            List<InventoryUpdate> history;
+  private @Transient            InventoryUpdate lastUpdate;
+  private                       String category;
 
   public InventoryEntity withInventoryId(Long inventoryId) {
     this.inventoryId = inventoryId;

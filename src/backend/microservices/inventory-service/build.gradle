@@ -48,6 +48,11 @@ dependencies {
 	testImplementation 'org.testcontainers:mongodb'
 
 	// implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+	// RESOURCE SERVER DEPENDENCIES
+	implementation 'org.springframework.boot:spring-boot-starter-security' 
+	implementation 'org.springframework.security:spring-security-oauth2-resource-server' 
+	implementation 'org.springframework.security:spring-security-oauth2-jose'
 }
 
 dependencyManagement {

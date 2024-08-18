@@ -16,4 +16,5 @@ public interface InventoryUpdateRepository extends ReactiveMongoRepository<Inven
 
   Flux<InventoryUpdateEntity> findAllByOrderId(Long orderId);
 
+
 }

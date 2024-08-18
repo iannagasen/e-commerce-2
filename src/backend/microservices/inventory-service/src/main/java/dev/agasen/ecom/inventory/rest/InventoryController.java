@@ -1,5 +1,8 @@
 package dev.agasen.ecom.inventory.rest;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.web.bind.annotation.RestController;
 
 import dev.agasen.ecom.api.core.inventory.model.Inventory;
@@ -8,7 +11,6 @@ import dev.agasen.ecom.api.core.inventory.model.InventoryUpdate;
 import dev.agasen.ecom.api.core.inventory.rest.InventoryRestController;
 import dev.agasen.ecom.inventory.rest.service.InventoryQueryService;
 import lombok.RequiredArgsConstructor;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -23,12 +25,12 @@ public class InventoryController implements InventoryRestController {
   }
 
   @Override
-  public Flux<Inventory> getInventories() {
-    throw new UnsupportedOperationException("Unimplemented method 'getInventories'");
+  public Mono<List<Inventory>> getInventories(Optional<String> category) {
+    return queryService.getInventories(category);
   }
 
   @Override
-  public Flux<InventoryUpdate> getInventoryHistory(Long productId) {
+  public Mono<List<InventoryUpdate>> getInventoryHistory(Long productId) {
     throw new UnsupportedOperationException("Unimplemented method 'getInventoryHistory'");
   }
 
