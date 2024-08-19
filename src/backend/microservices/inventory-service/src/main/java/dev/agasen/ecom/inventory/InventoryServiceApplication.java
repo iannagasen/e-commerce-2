@@ -9,8 +9,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 
 import dev.agasen.ecom.api.auth.resourceserver.EcomJwtAuthenticationConverter;
 
-@SpringBootApplication
-@ComponentScan("dev.agasen")
+@SpringBootApplication(scanBasePackages = "dev.agasen")
 public class InventoryServiceApplication {
 
 	public static void main(String[] args) {
