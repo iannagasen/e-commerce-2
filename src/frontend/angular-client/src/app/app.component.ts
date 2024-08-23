@@ -32,6 +32,7 @@ import { AuthStatus } from './auth/model/auth-status';
 
         <div *ngIf="status.val === 'LOGGED_IN'">
           <button (click)="logout()">Logout</button>
+          <button (click)="goToOrders()" class="w-full">Go To Orders</button>
         </div>
 
         <div *ngIf="user$ | async as userInfo">{{userInfo.sub}}</div>
@@ -59,6 +60,11 @@ export class AppComponent implements OnInit {
     this.user$ = this.authStatus$.pipe(this.getUserInfoIfLoggedIn());
     // this.isHome$ = this.checkIfHome();
   
+  }
+
+  public goToOrders() {
+    console.log('go to orders');
+    this.router.navigate(['/orders']);
   }
 
   loginViaOauth2() {

@@ -42,8 +42,8 @@ public class OrderController implements OrderRestController {
   }
 
   @Override
-  public Mono<List<PurchaseOrder>> getOrders(@AuthenticationPrincipal Jwt jwt,  GetOrdersType type) {
-    log.info("Jwt is {}", jwt);
+  public Mono<List<PurchaseOrder>> getOrders(GetOrdersType type) {
+    // log.info("Jwt is {}", jwt);
     return orderService.getOrders(type)
       .map(PurchaseOrderEntity::toRestModel)
       .collectList();

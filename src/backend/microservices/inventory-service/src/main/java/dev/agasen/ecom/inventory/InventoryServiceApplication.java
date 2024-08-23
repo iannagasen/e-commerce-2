@@ -7,7 +7,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
-import dev.agasen.ecom.api.auth.resourceserver.EcomJwtAuthenticationConverter;
+import dev.agasen.ecom.inventory.auth.resourceserver.EcomJwtAuthenticationConverter;
+
+
 
 @SpringBootApplication(scanBasePackages = "dev.agasen")
 public class InventoryServiceApplication {

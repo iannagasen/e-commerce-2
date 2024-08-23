@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 import { Category } from './model/category';
 import { DUMMY_CATEGORIES } from './dummy';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-public',
@@ -35,10 +36,12 @@ export class PublicComponent implements OnInit {
 
   constructor(
     private _router: Router,
+    private _http: HttpClient
   ) { }
   
   ngOnInit(): void {
     this.categories$ = of(DUMMY_CATEGORIES)
+    this._http.get('http://localhost:8103/public').subscribe(console.log)
   }
 
   handleClickCategory(category: Category) {

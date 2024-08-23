@@ -1,4 +1,4 @@
-package dev.agasen.ecom.api.auth.resourceserver;
+package dev.agasen.ecom.order.auth.resourceserver;
 
 import java.util.Collection;
 

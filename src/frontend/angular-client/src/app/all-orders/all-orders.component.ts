@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { OrderControllerService } from '../api/orderservice/services';
-import { PurchaseOrder } from '../api/orderservice/models';
+import { AllOrdersService } from './all-orders.service';
+import { PurchaseOrder } from './model/purchase-order';
 
 @Component({
   selector: 'app-all-orders',
@@ -11,11 +11,11 @@ import { PurchaseOrder } from '../api/orderservice/models';
   template: `
     <h1>All Orders</h1>
     <p>Here are all the orders</p>
+    <button (click)="getAllOrders()">get all</button>
     <ul>
-      <li *ngFor="let order of allOrders$ | async">
-        <!-- Display properties of order here, for example: -->
+      <!-- <li *ngFor="let order of allOrders$ | async">
         Order ID: {{ order.orderId }}, Order Name: {{ order.customerId }}
-      </li>
+      </li> -->
     </ul>
   `
 })
@@ -24,11 +24,16 @@ export class AllOrdersComponent {
   allOrders$!: Observable<Array<PurchaseOrder>>;
 
   constructor(
-    private _orderControllerService: OrderControllerService
+    private _orderControllerService: AllOrdersService
+
   ) { }
 
   ngOnInit(): void {
-    this.allOrders$ = this._orderControllerService.getOrders();
+    // this._orderControllerService.getAllOrders().subscribe(console.log);
+  }
+
+  public getAllOrders() {
+    this._orderControllerService.getAllOrders().subscribe(console.log);
   }
 
 }

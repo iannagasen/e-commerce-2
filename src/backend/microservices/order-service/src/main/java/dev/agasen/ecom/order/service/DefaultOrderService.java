@@ -1,5 +1,10 @@
 package dev.agasen.ecom.order.service;
 
+import java.util.function.Function;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,7 +57,9 @@ public class DefaultOrderService implements OrderService {
 
   @Override
   public Flux<PurchaseOrderEntity> getOrders(GetOrdersType type) {
-    return authFacade.getAuthentication().doOnNext(auth -> log.info("Auth: {}", auth)).thenMany(purchaseOrderRepo.findAll());
+    return ReactiveSecurityContextHolder.getContext()
+    .map((Function<? super SecurityContext, ? extends Authentication>) SecurityContext::getAuthentication)
+    .doOnNext(auth -> log.info("Auth: {}", auth)).thenMany(purchaseOrderRepo.findAll());
   }
 
 }

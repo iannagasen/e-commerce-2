@@ -89,6 +89,7 @@ export class AuthenticationService {
   
   private saveToken(token: AuthenticationResponse) {
     localStorage.setItem(REFRESH_TOKEN, token.refresh_token)
+    localStorage.setItem(ACCESS_TOKEN, token.access_token)
     console.log('Obtained access token')
   }
   

@@ -19,7 +19,13 @@ export const routes: Routes = [
     title: 'Shop by Category',
     path: 'public/category/:id',
     component: PublicCategoryComponent
-  }
+  },
+  {
+    title: 'Orders',
+    path: 'orders',
+    component: AllOrdersComponent
+
+  },
 
 
 ];
