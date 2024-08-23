@@ -1,18 +1,26 @@
 version: '3.0'
 
 services:
-  inventory:
-    build: src/backend/microservices/inventory-service
+  # inventory:
+  #   build: src/backend/microservices/inventory-service
+  #   mem_limit: 512m
+  #   ports:
+  #     - 8080:8080
+  #   # depends_on:
+  #   #   mongodb:
+  #   #     condition: service_healthy
+  #   #   kafka:
+  #   #     condition: service_healthy
+  #   environment:
+  #     - SPRING_PROFILES_ACTIVE=docker
+
+  frontend:
+    build: src/frontend/angular-client
     mem_limit: 512m
     ports:
-      - 8080:8080
-    # depends_on:
-    #   mongodb:
-    #     condition: service_healthy
-    #   kafka:
-    #     condition: service_healthy
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - 4201:4200
+    # environment:
+    #   - REACT_APP_API_URL=http://localhost:8080
 
   mongodb: 
     image: mongo:6.0.4
