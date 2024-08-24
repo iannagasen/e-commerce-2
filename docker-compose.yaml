@@ -73,6 +73,18 @@ services:
       ## sudo chown -R 1001:1001 ./kafka
       - kafka-data:/bitnami/kafka
 
+  nginx:
+    image: nginx:latest
+    hostname: ng1
+    ports:
+      - "800:8080" # where exposing 8080 instead of 80 since we configured on nginx.conf
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    extra_hosts:
+      - "localnode:${MY_LOCALHOST}"
+    # networks:
+    #   - app-network
+
 volumes:
   kafka-data:
     driver: local

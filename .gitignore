@@ -4,6 +4,9 @@ HELP.md
 ~/.gradle/*
 build/
 
+
+.env
+
 .gradle/8.7/executionHistory/
 .gradle/8.7/fileHashes/
 .gradle/buildOutputCleanup/
